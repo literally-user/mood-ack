@@ -9,6 +9,15 @@ services:
         aliases:
           - metrics.literally.io
 
+  keycloak:
+    image: keycloak/keycloak:latest
+    networks:
+      prodik-network:
+        aliases:
+          auth.literally.io
+    ports:
+      - 8080:8080
+
   rustfs:
     image: rustfs/rustfs:latest
     environment:

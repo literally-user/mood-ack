@@ -8,6 +8,11 @@ services:
     volumes:
       - "./src/prodik/:/prodik/src/prodik/"
 
+  keycloak:
+    extends:
+      file: docker-compose.base.yaml
+      service: keycloak
+
   prometheus:
     extends:
       file: docker-compose.base.yaml
