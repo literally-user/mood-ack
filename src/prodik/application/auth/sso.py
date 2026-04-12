@@ -59,10 +59,10 @@ class OAuthLoginInteractor:
         access_token = self._access_token_manager.generate(
             user, expires_in=self._config.api.expires_in
         )
-        session = await self._user_session_repository.get_by_user_id_and_ip(
+        user_session = await self._user_session_repository.get_by_user_id_and_ip(
             user.id, IP(ip)
         )
-        if session is None:
+        if user_session is None:
             await self._user_session_repository.create(
                 UserSession.new(
                     id=UserSessionId(uuid4()),
@@ -72,8 +72,8 @@ class OAuthLoginInteractor:
                 )
             )
         else:
-            session.update_refresh_token(refresh_token)
-            await self._user_session_repository.update(session)
+            user_session.update_refresh_token(refresh_token)
+            await self._user_session_repository.update(user_session)
 
         return OAuthLoginResponseDTO(
             access_token=access_token,

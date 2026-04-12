@@ -1,0 +1,98 @@
+from dataclasses import dataclass
+from uuid import uuid4
+
+from prodik.application.errors import UserAlreadyExistsError
+from prodik.application.interfaces.password_hasher import PasswordHasher
+from prodik.application.interfaces.repositories import (
+    LocalAuthorizationRepository,
+    UserRepository,
+    UserSessionRepository,
+)
+from prodik.application.interfaces.token_manager import (
+    AccessTokenManager,
+    RefreshTokenManager,
+)
+from prodik.application.interfaces.transaction_manager import TransactionManager
+from prodik.domain.credentials import (
+    LocalAuthorization,
+    LocalAuthorizationId,
+    UserSession,
+    UserSessionId,
+)
+from prodik.domain.user import Email, User, UserId
+from prodik.infrastructure.config import Config
+
+
+@dataclass(slots=True, frozen=True, kw_only=True)
+class RegisterRequestDTO:
+    username: str
+    first_name: str
+    last_name: str
+    email: str
+    password: str
+    age: int
+    ip: str
+
+
+@dataclass(slots=True, frozen=True, kw_only=True)
+class RegisterResponseDTO:
+    refresh_token: str
+    access_token: str
+
+    expires_in: int
+
+
+@dataclass
+class RegisterInteractor:
+    _local_authorization_repository: LocalAuthorizationRepository
+    _user_session_repository: UserSessionRepository
+    _access_token_manager: AccessTokenManager
+    _refresh_token_manager: RefreshTokenManager
+    _password_hasher: PasswordHasher
+    _user_repository: UserRepository
+    _tx_manager: TransactionManager
+    _config: Config
+
+    async def execute(self, request: RegisterRequestDTO) -> RegisterResponseDTO:
+        async with self._tx_manager:
+            user = await self._user_repository.get_by_email(Email(request.email))
+            if user is not None:
+                raise UserAlreadyExistsError("User already exists")
+
+            user_id = UserId(uuid4())
+            user = User.new(
+                id=user_id,
+                username=request.username,
+                first_name=request.first_name,
+                last_name=request.last_name,
+                email=request.email,
+                age=request.age,
+            )
+
+            refresh_token = self._refresh_token_manager.generate()
+            access_token = self._access_token_manager.generate(
+                user,
+                expires_in=self._config.api.expires_in,
+            )
+            local_authorization = LocalAuthorization.new(
+                id=LocalAuthorizationId(uuid4()),
+                user=user,
+                password=self._password_hasher.hash(request.password),
+            )
+
+            user_session = UserSession.new(
+                id=UserSessionId(uuid4()),
+                user=user,
+                ip=request.ip,
+                refresh_token=refresh_token,
+            )
+
+            await self._user_repository.create(user)
+            await self._local_authorization_repository.create(local_authorization)
+            await self._user_session_repository.create(user_session)
+
+            return RegisterResponseDTO(
+                refresh_token=refresh_token,
+                access_token=access_token,
+                expires_in=self._config.api.expires_in,
+            )
