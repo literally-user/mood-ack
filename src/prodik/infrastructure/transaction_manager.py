@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from prodik.application.interfaces.transaction_manager import TransactionManager
 
 
-class UoWImpl(TransactionManager):
+class TransactionManagerImpl(TransactionManager):
     _session: AsyncSession
 
     @override
