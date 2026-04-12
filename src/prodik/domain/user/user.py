@@ -148,6 +148,10 @@ class User(Entity[UserId]):
     def username(self) -> str:
         return self._username.value
 
+    @property
+    def role(self) -> UserRole:
+        return self._role
+
     def change_username(self, username: str) -> None:
         self._username = Username(username)
 

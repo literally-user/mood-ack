@@ -12,7 +12,10 @@ from prodik.application.interfaces.repositories import (
     UserRepository,
     UserSessionRepository,
 )
-from prodik.application.interfaces.token_manager import TokenManager
+from prodik.application.interfaces.token_manager import (
+    AccessTokenManager,
+    RefreshTokenManager,
+)
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.credentials import IP, UserSession, UserSessionId
 from prodik.domain.user import Email
@@ -38,7 +41,8 @@ class LoginResponseDTO:
 class LoginInteractor:
     _tx_manager: TransactionManager
     _password_hasher: PasswordHasher
-    _token_manager: TokenManager
+    _access_token_manager: AccessTokenManager
+    _refresh_token_manager: RefreshTokenManager
     _user_repository: UserRepository
     _local_authorization_repository: LocalAuthorizationRepository
     _user_session_repository: UserSessionRepository
@@ -64,11 +68,13 @@ class LoginInteractor:
             ):
                 raise InvalidCredentialsError("Invalid email or password")
 
-            refresh_token = self._token_manager.generate_refresh_token()
-            access_token = self._token_manager.generate_access_token(
+            refresh_token = self._refresh_token_manager.generate()
+            access_token = self._access_token_manager.generate(
                 user, expires_in=self._config.api.expires_in
             )
-            user_session = await self._user_session_repository.get_by_ip(IP(request.ip))
+            user_session = await self._user_session_repository.get_by_user_id_and_ip(
+                user.id, IP(request.ip)
+            )
             if user_session is None:
                 await self._user_session_repository.create(
                     UserSession.new(
