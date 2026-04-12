@@ -7,7 +7,7 @@ from prodik.infrastructure.token_manager import (
     RefreshTokenManagerImpl,
     StateTokenManagerImpl,
 )
-from prodik.infrastructure.transaction_manager import TransactionManager
+from prodik.infrastructure.transaction_manager import TransactionManagerImpl
 
 
 class InfrastructureProvider(Provider):
@@ -17,6 +17,6 @@ class InfrastructureProvider(Provider):
         WithParents[RefreshTokenManagerImpl],
         WithParents[StateTokenManagerImpl],
         WithParents[OAuthTokenManagerImpl],
-        WithParents[TransactionManager],
+        WithParents[TransactionManagerImpl],
         scope=Scope.REQUEST,
     )
