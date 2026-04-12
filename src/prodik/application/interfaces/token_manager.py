@@ -1,7 +1,7 @@
 from typing import Protocol, TypedDict
 from uuid import UUID
 
-from prodik.domain.user import UserRole
+from prodik.domain.user import User, UserRole
 
 
 class UserData(TypedDict):
@@ -10,5 +10,6 @@ class UserData(TypedDict):
 
 
 class TokenManager(Protocol):
-    def encode(self, user_id: UUID, user_role: UserRole) -> str: ...
-    def decode(self, token: str) -> UserData: ...
+    def generate_access_token(self, user: User, expires_in: int) -> str: ...
+    def decode_access_token(self, token: str) -> UserData: ...
+    def generate_refresh_token(self) -> str: ...

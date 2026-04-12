@@ -174,3 +174,6 @@ class User(Entity[UserId]):
 
     def deactivate(self) -> None:
         self._status = UserStatus.DEACTIVATED
+
+    def deactivated(self) -> bool:
+        return self._status == UserStatus.DEACTIVATED

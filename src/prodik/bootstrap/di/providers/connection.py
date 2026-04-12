@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from prodik.application.interfaces.uow import UoW
+from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.infrastructure.config import Config
 
 
@@ -33,6 +33,6 @@ class ConnectionProvider(Provider):
     async def get_async_session(
         self,
         session_factory: async_sessionmaker[AsyncSession],
-    ) -> AsyncIterator[AnyOf[AsyncSession, UoW]]:
+    ) -> AsyncIterator[AnyOf[AsyncSession, TransactionManager]]:
         async with session_factory() as session:
             yield session

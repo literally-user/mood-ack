@@ -3,10 +3,10 @@ from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prodik.application.interfaces.uow import UoW
+from prodik.application.interfaces.transaction_manager import TransactionManager
 
 
-class UoWImpl(UoW):
+class UoWImpl(TransactionManager):
     _session: AsyncSession
 
     @override

@@ -1,4 +1,5 @@
 from .credentials import (
+    IP,
     LocalAuthorization,
     LocalAuthorizationId,
     OAuthAuthorization,
@@ -8,6 +9,7 @@ from .credentials import (
 )
 
 __all__ = (
+    "IP",
     "LocalAuthorization",
     "LocalAuthorizationId",
     "OAuthAuthorization",

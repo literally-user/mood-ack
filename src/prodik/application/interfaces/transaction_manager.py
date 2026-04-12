@@ -2,7 +2,7 @@ from types import TracebackType
 from typing import Protocol
 
 
-class UoW(Protocol):
+class TransactionManager(Protocol):
     async def __aenter__(self) -> None: ...
     async def __aexit__(
         self,

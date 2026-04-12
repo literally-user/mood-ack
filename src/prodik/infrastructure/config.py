@@ -12,6 +12,7 @@ class APIConfig:
 
     debug: bool
     secret: str
+    expires_in: int
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -28,6 +29,7 @@ def load_config() -> Config:
                 host=config["api"]["host"],
                 port=config["api"]["port"],
                 persistence=config["api"]["persistence"],
+                expires_in=config["api"]["expires_in"],
                 debug=os.getenv("DEBUG", "false") in ("true", "false"),
                 secret=config["api"]["secret"],
             )

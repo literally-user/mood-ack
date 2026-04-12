@@ -7,7 +7,6 @@ from prodik.domain.credentials.errors import InvalidIPAddressFormatError
 from prodik.domain.shared import Entity, ValueObject
 from prodik.domain.user import User, UserId
 
-OAuthServiceId = NewType("OAuthServiceId", UUID)
 UserSessionId = NewType("UserSessionId", UUID)
 LocalAuthorizationId = NewType("LocalAuthorizationId", UUID)
 OAuthAuthorizationId = NewType("OAuthAuthorizationId", UUID)
@@ -23,23 +22,6 @@ class IP(ValueObject[str]):
                 "Invalid IP address format", metadata={"field": "ip", "value": value}
             )
         super().__init__(value)
-
-
-@dataclass(kw_only=True)
-class OAuthService(Entity[OAuthServiceId]):
-    _id: OAuthServiceId
-    _name: str
-
-    @classmethod
-    def new(cls, id: OAuthServiceId, name: str) -> "OAuthService":
-        return OAuthService(
-            _id=id,
-            _name=name,
-        )
-
-    @property
-    def name(self) -> str:
-        return self._name
 
 
 @dataclass(kw_only=True)
@@ -72,6 +54,9 @@ class UserSession(Entity[UserSessionId]):
     def refresh_token(self) -> str:
         return self._refresh_token
 
+    def update_refresh_token(self, refresh_token: str) -> None:
+        self._refresh_token = refresh_token
+
 
 @dataclass(kw_only=True)
 class LocalAuthorization(Entity[LocalAuthorizationId]):
@@ -97,17 +82,11 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
 @dataclass(kw_only=True)
 class OAuthAuthorization(Entity[OAuthAuthorizationId]):
     _id: OAuthAuthorizationId
-    _email: str
     _user_id: UserId
-    _user_session_id: UserSessionId
 
     @classmethod
-    def new(
-        cls, id: OAuthAuthorizationId, user: User, user_session: UserSession
-    ) -> "OAuthAuthorization":
+    def new(cls, id: OAuthAuthorizationId, user: User) -> "OAuthAuthorization":
         return OAuthAuthorization(
             _id=id,
             _user_id=user.id,
-            _email=user.email,
-            _user_session_id=user_session.id,
         )
