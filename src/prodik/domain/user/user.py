@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Final, NewType
-from datetime import datetime, UTC
 from uuid import UUID
 
 from prodik.domain.shared import Entity, ValueObject
@@ -153,7 +153,7 @@ class User(Entity[UserId]):
     @property
     def role(self) -> UserRole:
         return self._role
-    
+
     @property
     def id(self) -> UserId:
         return self._id

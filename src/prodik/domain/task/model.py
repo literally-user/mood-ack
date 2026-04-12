@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Final, NewType
 from uuid import UUID
-from datetime import datetime, UTC
 
 from prodik.domain.shared import Entity, ValueObject
 from prodik.domain.task.errors import (

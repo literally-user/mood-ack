@@ -1,8 +1,8 @@
 import re
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import NewType
 from uuid import UUID
-from datetime import datetime, UTC
 
 from prodik.domain.credentials.errors import InvalidIPAddressFormatError
 from prodik.domain.shared import Entity, ValueObject

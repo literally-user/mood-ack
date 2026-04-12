@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import cast, override
 from datetime import datetime
+from typing import cast, override
 from uuid import UUID
 
 
@@ -8,7 +8,7 @@ from uuid import UUID
 class Entity[EntityId: UUID]:
     _id: EntityId
     _created_at: datetime
-    _updated_at: datetime 
+    _updated_at: datetime
 
     @override
     def __eq__(self, value: object) -> bool:
