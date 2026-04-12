@@ -83,6 +83,9 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
     def password(self) -> str:
         return self._password
 
+    def change_password(self, new_password: str) -> None:
+        self._password = new_password
+
 
 @dataclass(kw_only=True)
 class OAuthAuthorization(Entity[OAuthAuthorizationId]):

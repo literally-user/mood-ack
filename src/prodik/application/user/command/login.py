@@ -60,8 +60,6 @@ class LoginInteractor:
             authorization = await self._local_authorization_repository.get_by_user_id(
                 user.id
             )
-            if authorization is None:
-                raise InvalidCredentialsError("Invalid email or password")
 
             if not self._password_hasher.verify(
                 authorization.password, request.password
