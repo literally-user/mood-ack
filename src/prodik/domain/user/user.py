@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from typing import Final, NewType
+from datetime import datetime, UTC
 from uuid import UUID
 
 from prodik.domain.shared import Entity, ValueObject
@@ -109,8 +110,6 @@ class Age(ValueObject[int]):
 
 @dataclass(kw_only=True)
 class User(Entity[UserId]):
-    _id: UserId
-
     _username: Username
     _first_name: FirstName
     _last_name: SecondName
@@ -129,6 +128,7 @@ class User(Entity[UserId]):
         email: str,
         age: int,
     ) -> "User":
+        now = datetime.now(tz=UTC)
         return User(
             _id=id,
             _username=Username(username),
@@ -138,6 +138,8 @@ class User(Entity[UserId]):
             _age=Age(age),
             _role=UserRole.USER,
             _status=UserStatus.ACTIVE,
+            _created_at=now,
+            _updated_at=now,
         )
 
     @property
@@ -151,6 +153,10 @@ class User(Entity[UserId]):
     @property
     def role(self) -> UserRole:
         return self._role
+    
+    @property
+    def id(self) -> UserId:
+        return self._id
 
     def change_username(self, username: str) -> None:
         self._username = Username(username)

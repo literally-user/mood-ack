@@ -1,17 +1,22 @@
+from dataclasses import dataclass
 from typing import cast, override
+from datetime import datetime
 from uuid import UUID
 
 
+@dataclass(kw_only=True)
 class Entity[EntityId: UUID]:
-    id: EntityId
+    _id: EntityId
+    _created_at: datetime
+    _updated_at: datetime 
 
     @override
     def __eq__(self, value: object) -> bool:
         if isinstance(value, Entity):
-            return cast("bool", self.id == value.id)
+            return cast("bool", self._id == value._id)
 
-        raise NotImplementedError
+        return NotImplemented
 
     @override
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self._id)

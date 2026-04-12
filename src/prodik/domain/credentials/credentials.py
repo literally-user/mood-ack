@@ -2,6 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import NewType
 from uuid import UUID
+from datetime import datetime, UTC
 
 from prodik.domain.credentials.errors import InvalidIPAddressFormatError
 from prodik.domain.shared import Entity, ValueObject
@@ -26,7 +27,6 @@ class IP(ValueObject[str]):
 
 @dataclass(kw_only=True)
 class UserSession(Entity[UserSessionId]):
-    _id: UserSessionId
     _ip: IP
     _user_id: UserId
     _refresh_token: str
@@ -39,11 +39,14 @@ class UserSession(Entity[UserSessionId]):
         ip: str,
         refresh_token: str,
     ) -> "UserSession":
+        now = datetime.now(tz=UTC)
         return UserSession(
             _id=id,
             _ip=IP(ip),
             _user_id=user.id,
             _refresh_token=refresh_token,
+            _created_at=now,
+            _updated_at=now,
         )
 
     @property
@@ -60,7 +63,6 @@ class UserSession(Entity[UserSessionId]):
 
 @dataclass(kw_only=True)
 class LocalAuthorization(Entity[LocalAuthorizationId]):
-    _id: LocalAuthorizationId
     _user_id: UserId
     _password: str
 
@@ -68,10 +70,13 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
     def new(
         cls, id: LocalAuthorizationId, user: User, password: str
     ) -> "LocalAuthorization":
+        now = datetime.now(tz=UTC)
         return LocalAuthorization(
             _id=id,
             _user_id=user.id,
             _password=password,
+            _created_at=now,
+            _updated_at=now,
         )
 
     @property
@@ -81,12 +86,14 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
 
 @dataclass(kw_only=True)
 class OAuthAuthorization(Entity[OAuthAuthorizationId]):
-    _id: OAuthAuthorizationId
     _user_id: UserId
 
     @classmethod
     def new(cls, id: OAuthAuthorizationId, user: User) -> "OAuthAuthorization":
+        now = datetime.now(tz=UTC)
         return OAuthAuthorization(
             _id=id,
             _user_id=user.id,
+            _created_at=now,
+            _updated_at=now,
         )

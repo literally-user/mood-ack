@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final, NewType
 from uuid import UUID
+from datetime import datetime, UTC
 
 from prodik.domain.shared import Entity, ValueObject
 from prodik.domain.task.errors import (
@@ -49,7 +50,6 @@ class TaskResult(ValueObject[float]):
 
 @dataclass
 class Task(Entity[TaskId]):
-    _id: TaskId
     _owner_id: UserId
     _state: TaskState
     _input: FileInput | RawInput
@@ -57,12 +57,15 @@ class Task(Entity[TaskId]):
 
     @classmethod
     def new(cls, id: TaskId, owner: User, input: FileInput | RawInput) -> "Task":
+        now = datetime.now(tz=UTC)
         return Task(
             _id=id,
             _owner_id=owner.id,
             _state=TaskState.PENDING,
             _input=input,
             _result=None,
+            _created_at=now,
+            _updated_at=now,
         )
 
     @property
