@@ -5,7 +5,6 @@ from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
     LocalAuthorizationRepository,
-    UserRepository,
     UserSessionRepository,
 )
 from prodik.application.interfaces.token_manager import (
@@ -37,7 +36,6 @@ class ChangePasswordResponseDTO:
 class ChangePasswordInteractor:
     _local_authorization_repository: LocalAuthorizationRepository
     _user_session_repository: UserSessionRepository
-    _user_repository: UserRepository
     _password_hasher: PasswordHasher
     _access_token_manager: AccessTokenManager
     _refresh_token_manager: RefreshTokenManager
@@ -49,6 +47,7 @@ class ChangePasswordInteractor:
         self, request: ChangePasswordRequestDTO
     ) -> ChangePasswordResponseDTO:
         async with self._tx_manager:
+            current_user_session = await self._idp.get_current_session()
             current_user = await self._idp.get_current_user()
             if current_user.deactivated():
                 raise UserDeactivatedError("User deactivated")
@@ -67,25 +66,25 @@ class ChangePasswordInteractor:
             ):
                 raise InvalidCredentialsError("Wrong old password")
 
-            access_token = self._access_token_manager.generate(
-                current_user, expires_in=self._config.api.expires_in
-            )
-            hashed_password = self._password_hasher.hash(request.new_password)
-
-            current_user_session = next(
-                session for session in current_user_sessions if session.ip == request.ip
-            )
             for session in current_user_sessions:
-                refresh_token = self._refresh_token_manager.generate()
-                session.update_refresh_token(refresh_token)
+                if session != current_user_session:
+                    session.revoke()
 
+            hashed_password = self._password_hasher.hash(request.new_password)
             local_authorization.change_password(hashed_password)
 
+            refresh_token = self._refresh_token_manager.generate()
+            access_token = self._access_token_manager.generate(
+                current_user, self._config.api.expires_in
+            )
+
             await self._local_authorization_repository.update(local_authorization)
-            await self._user_session_repository.update_many(current_user_sessions)
+            await self._user_session_repository.update_many(
+                [*current_user_sessions, current_user_session]
+            )
 
             return ChangePasswordResponseDTO(
+                refresh_token=refresh_token,
                 access_token=access_token,
-                refresh_token=current_user_session.ip,
                 expires_in=self._config.api.expires_in,
             )

@@ -83,7 +83,10 @@ class LoginInteractor:
                     )
                 )
             else:
-                user_session.update_refresh_token(refresh_token)
+                if user_session.is_revoked():
+                    user_session.enable()
+                    user_session.update_refresh_token(refresh_token)
+
                 await self._user_session_repository.update(user_session)
 
             return LoginResponseDTO(

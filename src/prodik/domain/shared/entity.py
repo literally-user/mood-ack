@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import cast, override
 from uuid import UUID
 
@@ -20,3 +20,7 @@ class Entity[EntityId: UUID]:
     @override
     def __hash__(self) -> int:
         return hash(self._id)
+
+    def touch(self) -> None:
+        now = datetime.now(tz=UTC)
+        self._updated_at = now

@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from enum import StrEnum
 from typing import NewType
 from uuid import UUID
 
@@ -11,6 +12,11 @@ from prodik.domain.user import User, UserId
 UserSessionId = NewType("UserSessionId", UUID)
 LocalAuthorizationId = NewType("LocalAuthorizationId", UUID)
 OAuthAuthorizationId = NewType("OAuthAuthorizationId", UUID)
+
+
+class UserSessionStatus(StrEnum):
+    REVOKED = "REVOKED"
+    ACTIVE = "ACTIVE"
 
 
 class IP(ValueObject[str]):
@@ -30,6 +36,7 @@ class UserSession(Entity[UserSessionId]):
     _ip: IP
     _user_id: UserId
     _refresh_token: str
+    _status: UserSessionStatus
 
     @classmethod
     def new(
@@ -45,6 +52,7 @@ class UserSession(Entity[UserSessionId]):
             _ip=IP(ip),
             _user_id=user.id,
             _refresh_token=refresh_token,
+            _status=UserSessionStatus.ACTIVE,
             _created_at=now,
             _updated_at=now,
         )
@@ -54,11 +62,27 @@ class UserSession(Entity[UserSessionId]):
         return self._ip.value
 
     @property
+    def user_id(self) -> UserId:
+        return self._user_id
+
+    @property
     def refresh_token(self) -> str:
         return self._refresh_token
 
+    def is_revoked(self) -> bool:
+        return self._status == UserSessionStatus.REVOKED
+
+    def enable(self) -> None:
+        self._status = UserSessionStatus.ACTIVE
+        self.touch()
+
     def update_refresh_token(self, refresh_token: str) -> None:
         self._refresh_token = refresh_token
+        self.touch()
+
+    def revoke(self) -> None:
+        self._status = UserSessionStatus.REVOKED
+        self.touch()
 
 
 @dataclass(kw_only=True)
@@ -85,6 +109,7 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
 
     def change_password(self, new_password: str) -> None:
         self._password = new_password
+        self.touch()
 
 
 @dataclass(kw_only=True)
