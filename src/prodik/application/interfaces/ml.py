@@ -3,9 +3,11 @@ from typing import Protocol
 
 from prodik.domain.task import Task
 
+
 @dataclass
 class ModelMeta:
     version: str
+
 
 class PredictingModel(Protocol):
     def get_model_info(self) -> ModelMeta: ...

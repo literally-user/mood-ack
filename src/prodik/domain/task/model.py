@@ -79,3 +79,7 @@ class Task(Entity[TaskId]):
     def set_result(self, result: float) -> None:
         self._result = TaskResult(result)
         self._state = TaskState.DONE
+
+    @property
+    def owner_id(self) -> UserId:
+        return self._owner_id

@@ -190,3 +190,6 @@ class User(Entity[UserId]):
 
     def can_manage_users(self) -> bool:
         return self._role == UserRole.MODERATOR
+
+    def can_manage_tasks(self) -> bool:
+        return self._role == UserRole.MODERATOR

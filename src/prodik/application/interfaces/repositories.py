@@ -7,7 +7,7 @@ from prodik.domain.credentials import (
     OAuthAuthorization,
     UserSession,
 )
-from prodik.domain.task import Task
+from prodik.domain.task import Task, TaskId
 from prodik.domain.user import Email, User, UserId, Username
 
 
@@ -41,4 +41,10 @@ class UserSessionRepository(Protocol):
 
 
 class TaskRepository(Protocol):
+    async def update(self, task: Task) -> None: ...
     async def create(self, task: Task) -> None: ...
+    async def get_by_id(self, id: TaskId) -> Task | None: ...
+    async def get_all(self, page: int, size: int) -> list[Task]: ...
+    async def get_all_by_user_id(
+        self, user_id: UserId, page: int, size: int
+    ) -> list[Task]: ...
