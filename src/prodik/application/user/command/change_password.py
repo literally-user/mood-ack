@@ -34,34 +34,34 @@ class ChangePasswordResponseDTO:
 
 @dataclass
 class ChangePasswordInteractor:
-    _local_authorization_repository: LocalAuthorizationRepository
-    _user_session_repository: UserSessionRepository
-    _password_hasher: PasswordHasher
-    _access_token_manager: AccessTokenManager
-    _refresh_token_manager: RefreshTokenManager
-    _tx_manager: TransactionManager
-    _config: Config
-    _idp: IdentityProvider
+    local_authorization_repository: LocalAuthorizationRepository
+    user_session_repository: UserSessionRepository
+    password_hasher: PasswordHasher
+    access_token_manager: AccessTokenManager
+    refresh_token_manager: RefreshTokenManager
+    tx_manager: TransactionManager
+    config: Config
+    idp: IdentityProvider
 
     async def execute(
         self, request: ChangePasswordRequestDTO
     ) -> ChangePasswordResponseDTO:
-        async with self._tx_manager:
-            current_user_session = await self._idp.get_current_session()
-            current_user = await self._idp.get_current_user()
+        async with self.tx_manager:
+            current_user_session = await self.idp.get_current_session()
+            current_user = await self.idp.get_current_user()
             if current_user.is_deactivated():
                 raise UserDeactivatedError("User deactivated")
 
             current_user_sessions = (
-                await self._user_session_repository.get_all_by_user_id(current_user.id)
+                await self.user_session_repository.get_all_by_user_id(current_user.id)
             )
             local_authorization = (
-                await self._local_authorization_repository.get_by_user_id(
+                await self.local_authorization_repository.get_by_user_id(
                     current_user.id
                 )
             )
 
-            if not self._password_hasher.verify(
+            if not self.password_hasher.verify(
                 local_authorization.password, request.old_password
             ):
                 raise InvalidCredentialsError("Wrong old password")
@@ -70,21 +70,21 @@ class ChangePasswordInteractor:
                 if session != current_user_session:
                     session.revoke()
 
-            hashed_password = self._password_hasher.hash(request.new_password)
+            hashed_password = self.password_hasher.hash(request.new_password)
             local_authorization.change_password(hashed_password)
 
-            refresh_token = self._refresh_token_manager.generate()
-            access_token = self._access_token_manager.generate(
-                current_user, self._config.api.expires_in
+            refresh_token = self.refresh_token_manager.generate()
+            access_token = self.access_token_manager.generate(
+                current_user, self.config.api.expires_in
             )
 
-            await self._local_authorization_repository.update(local_authorization)
-            await self._user_session_repository.update_many(
+            await self.local_authorization_repository.update(local_authorization)
+            await self.user_session_repository.update_many(
                 [*current_user_sessions, current_user_session]
             )
 
             return ChangePasswordResponseDTO(
                 refresh_token=refresh_token,
                 access_token=access_token,
-                expires_in=self._config.api.expires_in,
+                expires_in=self.config.api.expires_in,
             )

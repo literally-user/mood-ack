@@ -44,18 +44,18 @@ class RegisterResponseDTO:
 
 @dataclass
 class RegisterInteractor:
-    _local_authorization_repository: LocalAuthorizationRepository
-    _user_session_repository: UserSessionRepository
-    _access_token_manager: AccessTokenManager
-    _refresh_token_manager: RefreshTokenManager
-    _password_hasher: PasswordHasher
-    _user_repository: UserRepository
-    _tx_manager: TransactionManager
-    _config: Config
+    local_authorization_repository: LocalAuthorizationRepository
+    user_session_repository: UserSessionRepository
+    access_token_manager: AccessTokenManager
+    refresh_token_manager: RefreshTokenManager
+    password_hasher: PasswordHasher
+    user_repository: UserRepository
+    tx_manager: TransactionManager
+    config: Config
 
     async def execute(self, request: RegisterRequestDTO) -> RegisterResponseDTO:
-        async with self._tx_manager:
-            user = await self._user_repository.get_by_email(Email(request.email))
+        async with self.tx_manager:
+            user = await self.user_repository.get_by_email(Email(request.email))
             if user is not None:
                 raise UserAlreadyExistsError("User already exists")
 
@@ -69,15 +69,15 @@ class RegisterInteractor:
                 age=request.age,
             )
 
-            refresh_token = self._refresh_token_manager.generate()
-            access_token = self._access_token_manager.generate(
+            refresh_token = self.refresh_token_manager.generate()
+            access_token = self.access_token_manager.generate(
                 user,
-                expires_in=self._config.api.expires_in,
+                expires_in=self.config.api.expires_in,
             )
             local_authorization = LocalAuthorization.new(
                 id=LocalAuthorizationId(uuid4()),
                 user=user,
-                password=self._password_hasher.hash(request.password),
+                password=self.password_hasher.hash(request.password),
             )
 
             user_session = UserSession.new(
@@ -87,12 +87,12 @@ class RegisterInteractor:
                 refresh_token=refresh_token,
             )
 
-            await self._user_repository.create(user)
-            await self._local_authorization_repository.create(local_authorization)
-            await self._user_session_repository.create(user_session)
+            await self.user_repository.create(user)
+            await self.local_authorization_repository.create(local_authorization)
+            await self.user_session_repository.create(user_session)
 
             return RegisterResponseDTO(
                 refresh_token=refresh_token,
                 access_token=access_token,
-                expires_in=self._config.api.expires_in,
+                expires_in=self.config.api.expires_in,
             )
