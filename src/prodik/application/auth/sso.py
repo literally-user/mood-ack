@@ -52,7 +52,7 @@ class OAuthLoginInteractor:
         if user is None:
             raise InvalidCredentialsError("Invalid email or password")
 
-        if user.deactivated():
+        if user.is_deactivated():
             raise UserDeactivatedError("User deactivated")
 
         refresh_token = self._refresh_token_manager.generate()

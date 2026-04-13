@@ -49,7 +49,7 @@ class ChangePasswordInteractor:
         async with self._tx_manager:
             current_user_session = await self._idp.get_current_session()
             current_user = await self._idp.get_current_user()
-            if current_user.deactivated():
+            if current_user.is_deactivated():
                 raise UserDeactivatedError("User deactivated")
 
             current_user_sessions = (

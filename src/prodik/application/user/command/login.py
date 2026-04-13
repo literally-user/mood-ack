@@ -54,7 +54,7 @@ class LoginInteractor:
             if user is None:
                 raise UserNotFoundError("Invalid email or password")
 
-            if user.deactivated():
+            if user.is_deactivated():
                 raise UserDeactivatedError("User deactivated")
 
             authorization = await self._local_authorization_repository.get_by_user_id(
