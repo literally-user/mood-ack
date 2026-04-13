@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import uuid4
 
 from prodik.application.interfaces.identity_provider import IdentityProvider
-from prodik.application.interfaces.ml import PredictingModel
+from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.task import RawInput, Task, TaskId

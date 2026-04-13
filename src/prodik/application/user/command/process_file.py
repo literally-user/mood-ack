@@ -7,7 +7,7 @@ from prodik.application.errors import (
 )
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.identity_provider import IdentityProvider
-from prodik.application.interfaces.ml import PredictingModel
+from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.bootstrap.di.providers.registries import FileProcessingRegistry

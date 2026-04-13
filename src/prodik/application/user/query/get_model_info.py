@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from prodik.application.interfaces.ml import ModelMeta, PredictingModel
+from prodik.application.interfaces.predicting_model import ModelMeta, PredictingModel
 
 
 @dataclass
