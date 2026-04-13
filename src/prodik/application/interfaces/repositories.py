@@ -7,6 +7,7 @@ from prodik.domain.credentials import (
     OAuthAuthorization,
     UserSession,
 )
+from prodik.domain.task import Task
 from prodik.domain.user import Email, User, UserId, Username
 
 
@@ -37,3 +38,7 @@ class UserSessionRepository(Protocol):
     async def create(self, user_session: UserSession) -> None: ...
     async def update(self, user_session: UserSession) -> None: ...
     async def update_many(self, user_sessions: list[UserSession]) -> None: ...
+
+
+class TaskRepository(Protocol):
+    async def create(self, task: Task) -> None: ...
