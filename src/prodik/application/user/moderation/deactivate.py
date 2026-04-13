@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 
+from prodik.application.errors import (
+    ModeratorCannotBeDeactivatedError,
+    NotEnoughRightsError,
+    UserNotFoundError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.application.errors import NotEnoughRightsError, ModeratorCannotBeDeactivated, UserNotFoundError
 from prodik.domain.user import UserId
 
 
@@ -18,9 +22,11 @@ class DeactivateUserInteractor:
             current_user = await self.idp.get_current_user()
             if not current_user.can_manage_users():
                 raise NotEnoughRightsError("Not enough rights to perform operation")
-            
+
             if current_user.id == target_id:
-                raise ModeratorCannotBeDeactivated("Moderator cannot be deactivated")
+                raise ModeratorCannotBeDeactivatedError(
+                    "Moderator cannot be deactivated"
+                )
 
             target_user = await self.user_repository.get_by_uuid(target_id)
             if target_user is None:

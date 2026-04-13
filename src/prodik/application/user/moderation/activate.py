@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
+from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 from prodik.domain.user import UserId
 
 
