@@ -21,8 +21,8 @@ MIN_USERNAME_LENGTH: Final[int] = 5
 MAX_FIRST_NAME_LENGTH: Final[int] = 30
 MIN_FIRST_NAME_LENGTH: Final[int] = 1
 
-MAX_SECOND_NAME_LENGTH: Final[int] = 30
-MIN_SECOND_NAME_LENGTH: Final[int] = 1
+MAX_LAST_NAME_LENGTH: Final[int] = 30
+MIN_LAST_NAME_LENGTH: Final[int] = 1
 
 MIN_ALLOWED_AGE: Final[int] = 18
 MAX_ALLOWED_AGE: Final[int] = 99
@@ -78,17 +78,17 @@ class FirstName(ValueObject[str]):
         super().__init__(value)
 
 
-class SecondName(ValueObject[str]):
+class LastName(ValueObject[str]):
     def __init__(self, value: str) -> None:
-        if len(value) > MAX_SECOND_NAME_LENGTH:
+        if len(value) > MAX_LAST_NAME_LENGTH:
             raise UsernameTooLongError(
-                f"Second name cannot be longer than {MAX_SECOND_NAME_LENGTH} symbols",
-                metadata={"field": "second_name", "value": value},
+                f"Last name cannot be longer than {MAX_LAST_NAME_LENGTH} symbols",
+                metadata={"field": "last_name", "value": value},
             )
-        if len(value) < MIN_SECOND_NAME_LENGTH:
+        if len(value) < MIN_LAST_NAME_LENGTH:
             raise UsernameTooShortError(
-                f"Second name cannot be shorter than {MIN_SECOND_NAME_LENGTH} symbols",
-                metadata={"field": "second_name", "value": value},
+                f"Last name cannot be shorter than {MIN_LAST_NAME_LENGTH} symbols",
+                metadata={"field": "last_name", "value": value},
             )
         super().__init__(value)
 
@@ -112,7 +112,7 @@ class Age(ValueObject[int]):
 class User(Entity[UserId]):
     _username: Username
     _first_name: FirstName
-    _last_name: SecondName
+    _last_name: LastName
     _email: Email
     _age: Age
     _role: UserRole
@@ -133,7 +133,7 @@ class User(Entity[UserId]):
             _id=id,
             _username=Username(username),
             _first_name=FirstName(first_name),
-            _last_name=SecondName(last_name),
+            _last_name=LastName(last_name),
             _email=Email(email),
             _age=Age(age),
             _role=UserRole.USER,
@@ -164,8 +164,8 @@ class User(Entity[UserId]):
     def change_first_name(self, first_name: str) -> None:
         self._first_name = FirstName(first_name)
 
-    def change_second_name(self, second_name: str) -> None:
-        self.second_name = SecondName(second_name)
+    def change_last_name(self, last_name: str) -> None:
+        self._last_name = LastName(last_name)
 
     def change_email(self, email: str) -> None:
         self._email = Email(email)
@@ -187,3 +187,6 @@ class User(Entity[UserId]):
 
     def is_deactivated(self) -> bool:
         return self._status == UserStatus.DEACTIVATED
+
+    def can_manage_users(self) -> bool:
+        return self._role == UserRole.MODERATOR

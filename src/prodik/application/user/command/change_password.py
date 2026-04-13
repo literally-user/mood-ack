@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import InvalidCredentialsError, UserDeactivatedError
+from prodik.application.errors import InvalidCredentialsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
@@ -49,8 +49,6 @@ class ChangePasswordInteractor:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
             current_user = await self.idp.get_current_user()
-            if current_user.is_deactivated():
-                raise UserDeactivatedError("User deactivated")
 
             current_user_sessions = (
                 await self.user_session_repository.get_all_by_user_id(current_user.id)
