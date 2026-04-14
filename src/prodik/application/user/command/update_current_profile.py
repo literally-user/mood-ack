@@ -6,7 +6,7 @@ from prodik.application.interfaces.transaction_manager import TransactionManager
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
-class MeUpdateProfileRequestDTO:
+class UpdateCurrentProfileRequestDTO:
     email: str | None
     first_name: str | None
     last_name: str | None
@@ -15,12 +15,12 @@ class MeUpdateProfileRequestDTO:
 
 
 @dataclass
-class MeUpdateProfileInteractor:
+class UpdateCurrentProfileInteractor:
     user_repository: UserRepository
     tx_manager: TransactionManager
     idp: IdentityProvider
 
-    async def execute(self, request: MeUpdateProfileRequestDTO) -> None:
+    async def execute(self, request: UpdateCurrentProfileRequestDTO) -> None:
         async with self.tx_manager:
             current_user = await self.idp.get_current_user()
 

@@ -6,7 +6,7 @@ from prodik.domain.task import Task
 
 
 @dataclass
-class GetAllTasksInteractor:
+class GetAllTasksByUserInteractor:
     idp: IdentityProvider
     task_repository: TaskRepository
 

@@ -9,7 +9,7 @@ from prodik.domain.task import RawInput, Task, TaskId
 
 
 @dataclass
-class ProcessRawTextInteractor:
+class ProcessRawInteractor:
     idp: IdentityProvider
     predicting_model: PredictingModel
     task_repository: TaskRepository
