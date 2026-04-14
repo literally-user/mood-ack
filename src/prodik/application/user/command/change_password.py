@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import InvalidCredentialsError
+from prodik.application.errors import InvalidCredentialsError, UserSessionRevokedError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
@@ -48,6 +48,8 @@ class ChangePasswordInteractor:
     ) -> ChangePasswordResponseDTO:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
+            if current_user_session.is_revoked():
+                UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
             current_user_sessions = (

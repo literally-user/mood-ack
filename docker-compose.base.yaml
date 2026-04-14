@@ -1,13 +1,14 @@
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - prometheus-data:/prometheus
-      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  api:
+    build: .
+    restart: on-failure
+    container_name: api
+    command: ["prodik", "api", "run"]
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
-      prodik-network:
-        aliases:
-          - metrics.literally.io
+      - prodik-network
 
   keycloak:
     command: ["start-dev"]
@@ -21,14 +22,24 @@ services:
 
   rustfs:
     image: rustfs/rustfs:latest
-    environment:
-      
     networks:
       prodik-network:
         aliases:
-          - objstor.literally.io
+          - files.literally.io
     volumes:
       - rustfs-data:/data
+    env_file:
+      - "./deploy/rustfs.env"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus-data:/prometheus
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      prodik-network:
+        aliases:
+          - metrics.literally.io
 
   grafana:
     image: grafana/grafana:latest
@@ -55,17 +66,16 @@ services:
 
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: node-exporter
     restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     expose:
       - 9100
     networks:
@@ -73,7 +83,6 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: nginx
     ports:
       - 80:80
     networks:
@@ -85,21 +94,11 @@ services:
     depends_on:
       - api
 
-  api:
-    build: .
-    restart: on-failure
-    container_name: api
-    command: ["prodik", "api", "run"]
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      prodik-network:
-
 volumes:
   prometheus-data:
   grafana-data:
   postgres-data:
+  rustfs-data:
 
 networks:
   prodik-network:

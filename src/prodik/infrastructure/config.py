@@ -16,8 +16,18 @@ class APIConfig:
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
+class ObjectStorageConfig:
+    bucket: str
+    access_key: str
+    secret_key: str
+    region: str
+    url: str
+
+
+@dataclass(slots=True, frozen=True, kw_only=True)
 class Config:
     api: APIConfig
+    object_storage: ObjectStorageConfig
 
 
 def load_config() -> Config:
@@ -32,5 +42,12 @@ def load_config() -> Config:
                 expires_in=config["api"]["expires_in"],
                 debug=os.getenv("DEBUG", "false") in ("true", "false"),
                 secret=config["api"]["secret"],
-            )
+            ),
+            object_storage=ObjectStorageConfig(
+                bucket=config["object_storage"]["bucket"],
+                access_key=config["object_storage"]["access_key"],
+                secret_key=config["object_storage"]["secret_key"],
+                region=config["object_storage"]["region"],
+                url=config["object_storage"]["url"],
+            ),
         )

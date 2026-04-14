@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import NotEnoughRightsError, TaskNotFoundError
+from prodik.application.errors import (
+    NotEnoughRightsError,
+    TaskNotFoundError,
+    UserSessionRevokedError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.domain.task import Task, TaskId
@@ -12,6 +16,9 @@ class GetTaskInteractor:
     task_repository: TaskRepository
 
     async def execute(self, task_id: TaskId) -> Task:
+        current_user_session = await self.idp.get_current_session()
+        if current_user_session.is_revoked():
+            UserSessionRevokedError("Session was revoked")
         current_user = await self.idp.get_current_user()
         task = await self.task_repository.get_by_id(task_id)
         if task is None:

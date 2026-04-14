@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
+from prodik.application.errors import (
+    NotEnoughRightsError,
+    UserNotFoundError,
+    UserSessionRevokedError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
@@ -15,6 +19,9 @@ class ActivateUserInteractor:
 
     async def execute(self, target_id: UserId) -> None:
         async with self.tx_manager:
+            current_user_session = await self.idp.get_current_session()
+            if current_user_session.is_revoked():
+                UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
             if not current_user.can_manage_users():
                 raise NotEnoughRightsError("Not enough rights to perform operation")

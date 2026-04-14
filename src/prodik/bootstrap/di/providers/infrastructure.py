@@ -1,5 +1,6 @@
 from dishka import Provider, Scope, WithParents, provide_all
 
+from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
 from prodik.infrastructure.identity_provider import IdentityProviderImpl
 from prodik.infrastructure.ml import PredictingModelImpl
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
@@ -37,5 +38,6 @@ class InfrastructureProvider(Provider):
         WithParents[OAuthClientRegistry],
         WithParents[IdentityProviderImpl],
         WithParents[PredictingModelImpl],
+        WithParents[FileStorageGatewayImpl],
         scope=Scope.REQUEST,
     )

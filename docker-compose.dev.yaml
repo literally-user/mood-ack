@@ -1,53 +1,13 @@
 services:
   api:
-    extends:
-      file: docker-compose.base.yaml
-      service: api
     environment:
-      - DEBUG=false
+      DEBUG: "true"
     volumes:
       - "./src/prodik/:/prodik/src/prodik/"
 
-  keycloak:
-    extends:
-      file: docker-compose.base.yaml
-      service: keycloak
-
-  prometheus:
-    extends:
-      file: docker-compose.base.yaml
-      service: prometheus
-
-  nginx:
-    extends:
-      file: docker-compose.base.yaml
-      service: nginx
-
-  node-exporter:
-    extends:
-      file: docker-compose.base.yaml
-      service: node-exporter
-
-  grafana:
-    extends:
-      file: docker-compose.base.yaml
-      service: grafana
-
   postgres:
-    extends:
-      file: docker-compose.base.yaml
-      service: postgres
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
-
-volumes:
-  prometheus-data:
-  grafana-data:
-  postgres-data:
-
-networks:
-  prodik-network:
-    driver: bridge

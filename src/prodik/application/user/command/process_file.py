@@ -4,6 +4,7 @@ from uuid import uuid4
 from prodik.application.errors import (
     ObjectFileNotFoundError,
     UnsupportedFileExtensionError,
+    UserSessionRevokedError,
 )
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.identity_provider import IdentityProvider
@@ -25,6 +26,9 @@ class ProcessFileInteractor:
 
     async def execute(self, file_id: FileId) -> Task:
         async with self.tx_manager:
+            current_user_session = await self.idp.get_current_session()
+            if current_user_session.is_revoked():
+                UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
             file_meta = await self.file_storage_gateway.get_file_info(file_id)
