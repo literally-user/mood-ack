@@ -48,6 +48,7 @@ class AccessTokenManagerImpl(AccessTokenManager):
         return UserData(
             uuid=UUID(data["sub"]),
             role=UserRole(data["role"]),
+            expires_in=data["exp"],
         )
 
 

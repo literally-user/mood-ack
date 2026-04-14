@@ -10,7 +10,7 @@ services:
           - metrics.literally.io
 
   keycloak:
-    command: ["start"]
+    command: ["start-dev"]
     image: keycloak/keycloak:latest
     networks:
       prodik-network:

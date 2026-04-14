@@ -10,8 +10,8 @@ from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.bootstrap.di.providers.registries import FileProcessingRegistry
 from prodik.domain.task import FileId, FileInput, Task, TaskId
+from prodik.infrastructure.registries import FileProcessingRegistry
 
 
 @dataclass

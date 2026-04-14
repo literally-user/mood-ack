@@ -9,6 +9,7 @@ from prodik.domain.user import User, UserRole
 class UserData:
     uuid: UUID
     role: UserRole
+    expires_in: int
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)

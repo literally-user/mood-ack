@@ -1,13 +1,16 @@
 from dataclasses import dataclass
 from uuid import uuid4
 
-from prodik.application.errors import InvalidCredentialsError, UserDeactivatedError
+from prodik.application.errors import (
+    InvalidCredentialsError,
+    UnsupportedProviderError,
+    UserDeactivatedError,
+)
 from prodik.application.interfaces.repositories import (
     OAuthAuthorizationRepository,
     UserRepository,
     UserSessionRepository,
 )
-from prodik.application.interfaces.sso import OAuthClientRegistry
 from prodik.application.interfaces.token_manager import (
     AccessTokenManager,
     OAuthTokenManager,
@@ -17,6 +20,7 @@ from prodik.application.interfaces.token_manager import (
 from prodik.domain.credentials import IP, UserSession, UserSessionId
 from prodik.domain.user import Email
 from prodik.infrastructure.config import Config
+from prodik.infrastructure.registries import OAuthClientRegistry
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -44,6 +48,8 @@ class OAuthLoginInteractor:
     ) -> OAuthLoginResponseDTO:
         provider = self.state_token_manager.decode(state_token).provider
         client = self.client_registry.get_client(provider)
+        if client is None:
+            raise UnsupportedProviderError("Unsupported OAuth provider")
 
         client_data = await client.exchange_code(authorization_code)
         oauth_data = self.oauth_token_manager.decode(client_data.token_id)
