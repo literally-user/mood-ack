@@ -10,11 +10,12 @@ services:
           - metrics.literally.io
 
   keycloak:
+    command: ["start"]
     image: keycloak/keycloak:latest
     networks:
       prodik-network:
         aliases:
-          auth.literally.io
+          - auth.literally.io
     ports:
       - 8080:8080
 
