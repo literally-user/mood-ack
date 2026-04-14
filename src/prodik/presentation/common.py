@@ -1,12 +1,14 @@
-from typing import Final
+from typing import Any, Final
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from prodik.application.errors import ApplicationError, UserAlreadyExistsError
+from prodik.application.errors import ApplicationError
+from prodik.domain.user.errors import DomainUserValidationError
+from prodik.presentation.root import router as root_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
-    UserAlreadyExistsError: status.HTTP_400_BAD_REQUEST
+    DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT
 }
 
 
@@ -16,12 +18,19 @@ async def application_error_handler(
     status_code = EXCEPTION_HANDLERS.get(
         type(exception), status.HTTP_500_INTERNAL_SERVER_ERROR
     )
-    return JSONResponse(status_code=status_code, content=exception.detail)
+
+    response_body: dict[str, Any] = {
+        "detail": exception.detail,
+    }
+
+    if exception.metadata:
+        response_body["meta"] = exception.metadata
+
+    return JSONResponse(status_code=status_code, content=response_body)
 
 
 def include_handlers(app: FastAPI) -> None:
-    # app.include_router(your_router)
-    pass
+    app.include_router(root_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
