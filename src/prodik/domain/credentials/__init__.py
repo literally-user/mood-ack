@@ -6,6 +6,7 @@ from .credentials import (
     OAuthAuthorizationId,
     UserSession,
     UserSessionId,
+    UserSessionStatus,
 )
 
 __all__ = (
@@ -16,4 +17,5 @@ __all__ = (
     "OAuthAuthorizationId",
     "UserSession",
     "UserSessionId",
+    "UserSessionStatus",
 )

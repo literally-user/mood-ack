@@ -1,4 +1,4 @@
-from .model import FileId, FileInput, RawInput, Task, TaskId
+from .model import FileId, FileInput, RawInput, Task, TaskId, TaskState
 
 __all__ = (
     "FileId",
@@ -6,4 +6,5 @@ __all__ = (
     "RawInput",
     "Task",
     "TaskId",
+    "TaskState",
 )

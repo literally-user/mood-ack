@@ -69,6 +69,10 @@ class Task(Entity[TaskId]):
         )
 
     @property
+    def id(self) -> TaskId:
+        return self.id
+
+    @property
     def state(self) -> TaskState:
         return self._state
 

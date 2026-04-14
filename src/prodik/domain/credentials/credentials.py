@@ -107,6 +107,10 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
     def password(self) -> str:
         return self._password
 
+    @property
+    def user_id(self) -> UserId:
+        return self._user_id
+
     def change_password(self, new_password: str) -> None:
         self._password = new_password
         self.touch()
@@ -125,3 +129,7 @@ class OAuthAuthorization(Entity[OAuthAuthorizationId]):
             _created_at=now,
             _updated_at=now,
         )
+
+    @property
+    def user_id(self) -> UserId:
+        return self._user_id
