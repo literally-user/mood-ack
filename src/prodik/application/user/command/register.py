@@ -20,7 +20,7 @@ from prodik.domain.credentials import (
     UserSessionId,
 )
 from prodik.domain.user import Email, User, UserId
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import APIConfig
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -51,7 +51,7 @@ class RegisterInteractor:
     password_hasher: PasswordHasher
     user_repository: UserRepository
     tx_manager: TransactionManager
-    config: Config
+    config: APIConfig
 
     async def execute(self, request: RegisterRequestDTO) -> RegisterResponseDTO:
         async with self.tx_manager:
@@ -72,7 +72,7 @@ class RegisterInteractor:
             refresh_token = self.refresh_token_manager.generate()
             access_token = self.access_token_manager.generate(
                 user,
-                expires_in=self.config.api.expires_in,
+                expires_in=self.config.expires_in,
             )
             local_authorization = LocalAuthorization.new(
                 id=LocalAuthorizationId(uuid4()),
@@ -94,5 +94,5 @@ class RegisterInteractor:
             return RegisterResponseDTO(
                 refresh_token=refresh_token,
                 access_token=access_token,
-                expires_in=self.config.api.expires_in,
+                expires_in=self.config.expires_in,
             )

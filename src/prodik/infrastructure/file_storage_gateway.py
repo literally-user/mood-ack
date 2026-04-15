@@ -7,13 +7,13 @@ from aiobotocore.response import StreamingBody
 
 from prodik.application.interfaces.gateways import FileMeta, FileStorageGateway
 from prodik.domain.task import FileId
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import ObjectStorageConfig
 
 
 @dataclass(slots=True)
 class FileStorageGatewayImpl(FileStorageGateway):
     client: AioBaseClient
-    config: Config
+    config: ObjectStorageConfig
 
     async def get_storage_link(self) -> str:
         file_id = uuid4()
@@ -22,7 +22,7 @@ class FileStorageGatewayImpl(FileStorageGateway):
         return self.client.generate_presigned_url(  # type: ignore
             ClientMethod="put_object",
             Params={
-                "Bucket": self.config.object_storage.bucket,
+                "Bucket": self.config.bucket,
                 "Key": key,
             },
             ExpiresIn=3600,
@@ -33,7 +33,7 @@ class FileStorageGatewayImpl(FileStorageGateway):
 
         try:
             response: dict[str, Any] = await self.client.get_object(  # type: ignore
-                Bucket=self.config.object_storage.bucket,
+                Bucket=self.config.bucket,
                 Key=key,
             )
 

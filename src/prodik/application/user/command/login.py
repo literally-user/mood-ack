@@ -19,7 +19,7 @@ from prodik.application.interfaces.token_manager import (
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.credentials import IP, UserSession, UserSessionId
 from prodik.domain.user import Email
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import APIConfig
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -46,7 +46,7 @@ class LoginInteractor:
     user_repository: UserRepository
     local_authorization_repository: LocalAuthorizationRepository
     user_session_repository: UserSessionRepository
-    config: Config
+    config: APIConfig
 
     async def execute(self, request: LoginRequestDTO) -> LoginResponseDTO:
         async with self.tx_manager:
@@ -68,7 +68,7 @@ class LoginInteractor:
 
             refresh_token = self.refresh_token_manager.generate()
             access_token = self.access_token_manager.generate(
-                user, expires_in=self.config.api.expires_in
+                user, expires_in=self.config.expires_in
             )
             user_session = await self.user_session_repository.get_by_user_id_and_ip(
                 user.id, IP(request.ip)
@@ -92,5 +92,5 @@ class LoginInteractor:
             return LoginResponseDTO(
                 refresh_token=refresh_token,
                 access_token=access_token,
-                expires_in=self.config.api.expires_in,
+                expires_in=self.config.expires_in,
             )

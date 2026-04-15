@@ -1,6 +1,6 @@
-from dishka import Provider, Scope, WithParents, provide_all
+from dishka import Provider, Scope, provide_all
 
-from prodik.application.auth import OAuthLoginInteractor
+from prodik.application.auth import OAuthLoginInteractor, RefreshTokenInteractor
 from prodik.application.task.moderation import CancelTaskInteractor
 from prodik.application.task.query import (
     GetAllTasksByUserInteractor,
@@ -24,19 +24,20 @@ from prodik.application.user.moderation import (
 
 class ApplicationProvider(Provider):
     provides = provide_all(
-        WithParents[OAuthLoginInteractor],
-        WithParents[CancelTaskInteractor],
-        WithParents[GetAllTasksByUserInteractor],
-        WithParents[GetAllTasksInteractor],
-        WithParents[GetTaskInteractor],
-        WithParents[ChangePasswordInteractor],
-        WithParents[LoginInteractor],
-        WithParents[RegisterInteractor],
-        WithParents[ProcessFileInteractor],
-        WithParents[ProcessRawInteractor],
-        WithParents[UpdateCurrentProfileInteractor],
-        WithParents[UpdateProfileInteractor],
-        WithParents[DeactivateUserInteractor],
-        WithParents[ActivateUserInteractor],
+        OAuthLoginInteractor,
+        CancelTaskInteractor,
+        GetAllTasksByUserInteractor,
+        GetAllTasksInteractor,
+        GetTaskInteractor,
+        ChangePasswordInteractor,
+        LoginInteractor,
+        RegisterInteractor,
+        ProcessFileInteractor,
+        ProcessRawInteractor,
+        UpdateCurrentProfileInteractor,
+        UpdateProfileInteractor,
+        DeactivateUserInteractor,
+        ActivateUserInteractor,
+        RefreshTokenInteractor,
         scope=Scope.REQUEST,
     )

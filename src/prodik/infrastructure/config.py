@@ -8,11 +8,15 @@ from pathlib import Path
 class APIConfig:
     host: str
     port: int
-    persistence: str
 
     debug: bool
     secret: str
     expires_in: int
+
+
+@dataclass(slots=True, frozen=True, kw_only=True)
+class PersistenceConfig:
+    url: str
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -27,6 +31,7 @@ class ObjectStorageConfig:
 @dataclass(slots=True, frozen=True, kw_only=True)
 class Config:
     api: APIConfig
+    persistence: PersistenceConfig
     object_storage: ObjectStorageConfig
 
 
@@ -38,10 +43,12 @@ def load_config() -> Config:
             api=APIConfig(
                 host=config["api"]["host"],
                 port=config["api"]["port"],
-                persistence=config["api"]["persistence"],
                 expires_in=config["api"]["expires_in"],
                 debug=os.getenv("DEBUG", "false") in ("true", "false"),
                 secret=config["api"]["secret"],
+            ),
+            persistence=PersistenceConfig(
+                url=config["api"]["persistence"],
             ),
             object_storage=ObjectStorageConfig(
                 bucket=config["object_storage"]["bucket"],

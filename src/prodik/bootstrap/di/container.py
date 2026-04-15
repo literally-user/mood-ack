@@ -7,7 +7,12 @@ from prodik.bootstrap.di.providers.connection import (
     S3Provider,
 )
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import (
+    APIConfig,
+    Config,
+    ObjectStorageConfig,
+    PersistenceConfig,
+)
 
 
 def get_async_container(config: Config) -> AsyncContainer:
@@ -17,5 +22,9 @@ def get_async_container(config: Config) -> AsyncContainer:
         InfrastructureProvider(),
         ApplicationProvider(),
         ConnectionProvider(),
-        context={Config: config},
+        context={
+            APIConfig: config.api,
+            PersistenceConfig: config.persistence,
+            ObjectStorageConfig: config.object_storage,
+        },
     )

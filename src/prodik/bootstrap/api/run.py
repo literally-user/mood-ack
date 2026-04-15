@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from prodik.bootstrap.di import get_async_container
 from prodik.bootstrap.logs import configure_structlog
-from prodik.infrastructure.config import Config, load_config
+from prodik.infrastructure.config import APIConfig, load_config
 from prodik.presentation.common import (
     include_exception_handlers,
     include_handlers,
@@ -21,12 +21,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await app.state.dishka_container.close()
 
 
-def create_app(config: Config) -> FastAPI:
+def create_app(config: APIConfig) -> FastAPI:
     app = FastAPI(
         lifespan=lifespan,
-        docs_url="/docs" if config.api.debug else None,
-        redoc_url="/redoc" if config.api.debug else None,
-        openapi_url="/openapi.json" if config.api.debug else None,
+        docs_url="/docs" if config.debug else None,
+        redoc_url="/redoc" if config.debug else None,
+        openapi_url="/openapi.json" if config.debug else None,
         title="application",
         description="Great & powerful application",
         version="0.1.0",
@@ -49,7 +49,7 @@ def create_app(config: Config) -> FastAPI:
 def run_http(_argv: list[str]) -> None:
     config = load_config()
 
-    app = create_app(config)
+    app = create_app(config.api)
     container = get_async_container(config)
     log_configuration = configure_structlog()
 

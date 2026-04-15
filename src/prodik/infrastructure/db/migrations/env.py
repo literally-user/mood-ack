@@ -29,7 +29,7 @@ target_metadata = metadata
 # ... etc.
 
 database_config = load_config()
-config.set_main_option("sqlalchemy.url", database_config.api.persistence)
+config.set_main_option("sqlalchemy.url", database_config.persistence.url)
 
 
 def run_migrations_offline() -> None:

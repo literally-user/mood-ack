@@ -15,12 +15,12 @@ from prodik.application.interfaces.token_manager import (
     UserData,
 )
 from prodik.domain.user import User, UserRole
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import APIConfig
 
 
 @dataclass
 class AccessTokenManagerImpl(AccessTokenManager):
-    _config: Config
+    _config: APIConfig
 
     def generate(self, user: User, expires_in: int) -> str:
         now = datetime.now(tz=UTC)
@@ -34,14 +34,14 @@ class AccessTokenManagerImpl(AccessTokenManager):
 
         return jwt.encode(
             payload,
-            self._config.api.secret,
+            self._config.secret,
             algorithm="HS256",
         )
 
     def decode(self, token: str) -> UserData:
         data = jwt.decode(
             token,
-            self._config.api.secret,
+            self._config.secret,
             algorithms=["HS256"],
         )
 
@@ -60,7 +60,7 @@ class RefreshTokenManagerImpl(RefreshTokenManager):
 
 @dataclass
 class StateTokenManagerImpl(StateTokenManager):
-    _config: Config
+    _config: APIConfig
 
     def generate(self, data: StateData) -> str:
         now = datetime.now(tz=UTC)
@@ -73,14 +73,14 @@ class StateTokenManagerImpl(StateTokenManager):
 
         return jwt.encode(
             payload,
-            self._config.api.secret,
+            self._config.secret,
             algorithm="HS256",
         )
 
     def decode(self, token: str) -> StateData:
         data = jwt.decode(
             token,
-            self._config.api.secret,
+            self._config.secret,
             algorithms=["HS256"],
         )
 

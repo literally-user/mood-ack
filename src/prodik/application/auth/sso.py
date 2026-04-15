@@ -19,7 +19,7 @@ from prodik.application.interfaces.token_manager import (
 )
 from prodik.domain.credentials import IP, UserSession, UserSessionId
 from prodik.domain.user import Email
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import APIConfig
 from prodik.infrastructure.registries import OAuthClientRegistry
 
 
@@ -41,7 +41,7 @@ class OAuthLoginInteractor:
     refresh_token_manager: RefreshTokenManager
     access_token_manager: AccessTokenManager
     user_repository: UserRepository
-    config: Config
+    config: APIConfig
 
     async def execute(
         self, authorization_code: str, state_token: str, ip: str
@@ -63,7 +63,7 @@ class OAuthLoginInteractor:
 
         refresh_token = self.refresh_token_manager.generate()
         access_token = self.access_token_manager.generate(
-            user, expires_in=self.config.api.expires_in
+            user, expires_in=self.config.expires_in
         )
         user_session = await self.user_session_repository.get_by_user_id_and_ip(
             user.id, IP(ip)
@@ -84,5 +84,5 @@ class OAuthLoginInteractor:
         return OAuthLoginResponseDTO(
             access_token=access_token,
             refresh_token=refresh_token,
-            expires_in=self.config.api.expires_in,
+            expires_in=self.config.expires_in,
         )

@@ -13,7 +13,7 @@ from prodik.application.interfaces.token_manager import (
 )
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.credentials import IP
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import APIConfig
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -40,7 +40,7 @@ class ChangePasswordInteractor:
     access_token_manager: AccessTokenManager
     refresh_token_manager: RefreshTokenManager
     tx_manager: TransactionManager
-    config: Config
+    config: APIConfig
     idp: IdentityProvider
 
     async def execute(
@@ -75,7 +75,7 @@ class ChangePasswordInteractor:
 
             refresh_token = self.refresh_token_manager.generate()
             access_token = self.access_token_manager.generate(
-                current_user, self.config.api.expires_in
+                current_user, self.config.expires_in
             )
 
             await self.local_authorization_repository.update(local_authorization)
@@ -86,5 +86,5 @@ class ChangePasswordInteractor:
             return ChangePasswordResponseDTO(
                 refresh_token=refresh_token,
                 access_token=access_token,
-                expires_in=self.config.api.expires_in,
+                expires_in=self.config.expires_in,
             )

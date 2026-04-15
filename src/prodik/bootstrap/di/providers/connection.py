@@ -11,13 +11,13 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import ObjectStorageConfig, PersistenceConfig
 
 
 class ConnectionProvider(Provider):
     @provide(scope=Scope.APP)
-    async def get_engine(self, config: Config) -> AsyncIterator[AsyncEngine]:
-        engine = create_async_engine(config.api.persistence, future=True)
+    async def get_engine(self, config: PersistenceConfig) -> AsyncIterator[AsyncEngine]:
+        engine = create_async_engine(config.url, future=True)
         yield engine
         await engine.dispose()
 
@@ -42,21 +42,21 @@ class ConnectionProvider(Provider):
 
 class S3Provider(Provider):
     @provide(scope=Scope.APP)
-    def get_s3_session(self, config: Config) -> AiobotoSession:
+    def get_s3_session(self, config: ObjectStorageConfig) -> AiobotoSession:
         return AiobotoSession(
-            aws_access_key_id=config.object_storage.access_key,
-            aws_secret_access_key=config.object_storage.secret_key,
-            region_name=config.object_storage.region,
+            aws_access_key_id=config.access_key,
+            aws_secret_access_key=config.secret_key,
+            region_name=config.region,
         )
 
     @provide(scope=Scope.REQUEST)
     async def get_s3_client(
         self,
         session: AiobotoSession,
-        config: Config,
+        config: ObjectStorageConfig,
     ) -> AsyncIterator[AioBaseClient]:
         async with session.client(
             "s3",
-            endpoint_url=config.object_storage.url,
+            endpoint_url=config.url,
         ) as client:
             yield client
