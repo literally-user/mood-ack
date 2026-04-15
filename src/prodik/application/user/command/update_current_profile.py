@@ -25,7 +25,7 @@ class UpdateCurrentProfileInteractor:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
             if current_user_session.is_revoked():
-                UserSessionRevokedError("Session was revoked")
+                raise UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
             if request.age is not None:

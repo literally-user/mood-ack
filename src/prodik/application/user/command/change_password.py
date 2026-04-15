@@ -49,7 +49,7 @@ class ChangePasswordInteractor:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
             if current_user_session.is_revoked():
-                UserSessionRevokedError("Session was revoked")
+                raise UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
             current_user_sessions = (
@@ -77,6 +77,7 @@ class ChangePasswordInteractor:
             access_token = self.access_token_manager.generate(
                 current_user, self.config.expires_in
             )
+            current_user_session.update_refresh_token(refresh_token)
 
             await self.local_authorization_repository.update(local_authorization)
             await self.user_session_repository.update_many(

@@ -85,7 +85,7 @@ class LoginInteractor:
             else:
                 if user_session.is_revoked():
                     user_session.enable()
-                    user_session.update_refresh_token(refresh_token)
+                user_session.update_refresh_token(refresh_token)
 
                 await self.user_session_repository.update(user_session)
 

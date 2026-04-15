@@ -13,5 +13,5 @@ class GetPredictingModelInfo:
     async def execute(self) -> ModelMeta:
         current_user_session = await self.idp.get_current_session()
         if current_user_session.is_revoked():
-            UserSessionRevokedError("Session was revoked")
+            raise UserSessionRevokedError("Session was revoked")
         return self.predicting_model.get_model_info()

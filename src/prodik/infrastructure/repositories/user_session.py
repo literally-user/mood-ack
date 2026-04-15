@@ -42,3 +42,8 @@ class UserSessionRepositoryImpl(UserSessionRepository):
     async def update_many(self, user_sessions: list[UserSession]) -> None:
         for session in user_sessions:
             self.session.add(session)
+
+    async def get_by_token(self, refresh_token: str) -> UserSession | None:
+        stmt = select(UserSession).where(UserSession.refresh_token == refresh_token)  # type: ignore
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

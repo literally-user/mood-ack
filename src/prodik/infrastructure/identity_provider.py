@@ -39,7 +39,7 @@ class IdentityProviderImpl(IdentityProvider):
             raise InvalidCredentialsError("Invalid authorization header format")
 
         data = self._access_token_manager.decode(token)
-        if data.expires_in >= datetime.now(tz=UTC).timestamp():
+        if data.expires_in <= datetime.now(tz=UTC).timestamp():
             raise AccessTokenExpiredError("Access token expired")
 
         return data

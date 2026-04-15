@@ -70,7 +70,7 @@ class Task(Entity[TaskId]):
 
     @property
     def id(self) -> TaskId:
-        return self.id
+        return self._id
 
     @property
     def state(self) -> TaskState:
@@ -79,10 +79,13 @@ class Task(Entity[TaskId]):
     def deprecate(self) -> None:
         if self._state == TaskState.DONE:
             raise CannotDeprecateFinishedTaskError("Finished task cannot be deprecated")
+        self._state = TaskState.DEPRECATED
+        self.touch()
 
     def set_result(self, result: float) -> None:
         self._result = TaskResult(result)
         self._state = TaskState.DONE
+        self.touch()
 
     @property
     def owner_id(self) -> UserId:

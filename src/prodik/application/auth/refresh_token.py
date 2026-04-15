@@ -41,7 +41,7 @@ class RefreshTokenInteractor:
                 raise InvalidCredentialsError("Invalid token format")
 
             if user_session.is_revoked():
-                UserSessionRevokedError("Session was revoked")
+                raise UserSessionRevokedError("Session was revoked")
 
             user = await self.user_repository.get_by_uuid(user_session.user_id)
             if user is None:

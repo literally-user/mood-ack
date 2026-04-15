@@ -28,7 +28,7 @@ class ProcessFileInteractor:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
             if current_user_session.is_revoked():
-                UserSessionRevokedError("Session was revoked")
+                raise UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
             file_meta = await self.file_storage_gateway.get_file_info(file_id)
@@ -47,7 +47,7 @@ class ProcessFileInteractor:
                 id=TaskId(uuid4()), owner=current_user, input=FileInput(file_id)
             )
 
-            self.predicting_model.process(readable_content, task)
+            task.set_result(self.predicting_model.process(readable_content, task))
 
             await self.task_repository.create(task)
 

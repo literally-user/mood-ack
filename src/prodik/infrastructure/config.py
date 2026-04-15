@@ -44,7 +44,7 @@ def load_config() -> Config:
                 host=config["api"]["host"],
                 port=config["api"]["port"],
                 expires_in=config["api"]["expires_in"],
-                debug=os.getenv("DEBUG", "false") in ("true", "false"),
+                debug=os.getenv("DEBUG", "false").lower() == "true",
                 secret=config["api"]["secret"],
             ),
             persistence=PersistenceConfig(

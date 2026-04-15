@@ -10,7 +10,11 @@ from prodik.domain.user.errors import (
     AgeTooBigError,
     AgeTooSmallError,
     EmailInvalidFormatError,
+    FirstNameTooLongError,
+    FirstNameTooShortError,
     InvalidUsernameFormatError,
+    SecondNameTooLongError,
+    SecondNameTooShortError,
     UsernameTooLongError,
     UsernameTooShortError,
 )
@@ -49,7 +53,7 @@ class Username(ValueObject[str]):
                 metadata={"field": "username", "value": value},
             )
         if len(value) < MIN_USERNAME_LENGTH:
-            raise UsernameTooLongError(
+            raise UsernameTooShortError(
                 f"Username cannot be shorter than {MIN_USERNAME_LENGTH} symbols",
                 metadata={"field": "username", "value": value},
             )
@@ -66,12 +70,12 @@ class Username(ValueObject[str]):
 class FirstName(ValueObject[str]):
     def __init__(self, value: str) -> None:
         if len(value) > MAX_FIRST_NAME_LENGTH:
-            raise UsernameTooLongError(
+            raise FirstNameTooLongError(
                 f"First name cannot be longer than {MAX_FIRST_NAME_LENGTH} symbols",
                 metadata={"field": "first_name", "value": value},
             )
         if len(value) < MIN_FIRST_NAME_LENGTH:
-            raise UsernameTooShortError(
+            raise FirstNameTooShortError(
                 f"First name cannot be shorter than {MIN_FIRST_NAME_LENGTH} symbols",
                 metadata={"field": "first_name", "value": value},
             )
@@ -81,12 +85,12 @@ class FirstName(ValueObject[str]):
 class LastName(ValueObject[str]):
     def __init__(self, value: str) -> None:
         if len(value) > MAX_LAST_NAME_LENGTH:
-            raise UsernameTooLongError(
+            raise SecondNameTooLongError(
                 f"Last name cannot be longer than {MAX_LAST_NAME_LENGTH} symbols",
                 metadata={"field": "last_name", "value": value},
             )
         if len(value) < MIN_LAST_NAME_LENGTH:
-            raise UsernameTooShortError(
+            raise SecondNameTooShortError(
                 f"Last name cannot be shorter than {MIN_LAST_NAME_LENGTH} symbols",
                 metadata={"field": "last_name", "value": value},
             )
@@ -160,30 +164,39 @@ class User(Entity[UserId]):
 
     def change_username(self, username: str) -> None:
         self._username = Username(username)
+        self.touch()
 
     def change_first_name(self, first_name: str) -> None:
         self._first_name = FirstName(first_name)
+        self.touch()
 
     def change_last_name(self, last_name: str) -> None:
         self._last_name = LastName(last_name)
+        self.touch()
 
     def change_email(self, email: str) -> None:
         self._email = Email(email)
+        self.touch()
 
     def change_age(self, age: int) -> None:
         self._age = Age(age)
+        self.touch()
 
     def set_user_role(self) -> None:
         self._role = UserRole.USER
+        self.touch()
 
     def set_moderator_role(self) -> None:
         self._role = UserRole.MODERATOR
+        self.touch()
 
     def activate(self) -> None:
         self._status = UserStatus.ACTIVE
+        self.touch()
 
     def deactivate(self) -> None:
         self._status = UserStatus.DEACTIVATED
+        self.touch()
 
     def is_deactivated(self) -> bool:
         return self._status == UserStatus.DEACTIVATED

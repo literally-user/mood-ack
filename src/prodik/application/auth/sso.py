@@ -77,9 +77,11 @@ class OAuthLoginInteractor:
                     refresh_token=refresh_token,
                 )
             )
-        elif user_session.is_revoked():
-            user_session.enable()
+        else:
+            if user_session.is_revoked():
+                user_session.enable()
             user_session.update_refresh_token(refresh_token)
+            await self.user_session_repository.update(user_session)
 
         return OAuthLoginResponseDTO(
             access_token=access_token,
