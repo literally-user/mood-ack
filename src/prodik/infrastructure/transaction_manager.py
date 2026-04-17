@@ -12,8 +12,7 @@ class TransactionManagerImpl(TransactionManager):
     _session: AsyncSession
 
     @override
-    async def __aenter__(self) -> None:
-        return None
+    async def __aenter__(self) -> None: ...
 
     @override
     async def __aexit__(
@@ -23,6 +22,7 @@ class TransactionManagerImpl(TransactionManager):
         tb: TracebackType | None,
     ) -> None:
         if exc:
+            print(exc)
             await self._session.rollback()
             return
         await self._session.commit()

@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from prodik.application.errors import (
     InvalidCredentialsError,
+    LocalAuthorizationNotFoundError,
     UserDeactivatedError,
     UserNotFoundError,
 )
@@ -62,6 +63,8 @@ class LoginInteractor:
             authorization = await self.local_authorization_repository.get_by_user_id(
                 user.id
             )
+            if authorization is None:
+                raise LocalAuthorizationNotFoundError("Local authorization not found")
 
             if not self.password_hasher.verify(
                 authorization.password, request.password

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prodik.application.interfaces.repositories import LocalAuthorizationRepository
@@ -13,12 +13,28 @@ class LocalAuthorizationRepositoryImpl(LocalAuthorizationRepository):
     session: AsyncSession
 
     async def create(self, local_authorization: LocalAuthorization) -> None:
-        self.session.add(local_authorization)
+        await self.session.execute(
+            insert(LocalAuthorization).values(
+                _id=local_authorization._id,
+                _user_id=local_authorization._user_id,
+                _password=local_authorization._password,
+                _created_at=local_authorization._created_at,
+                _updated_at=local_authorization._updated_at,
+            )
+        )
 
     async def update(self, local_authorization: LocalAuthorization) -> None:
-        self.session.add(local_authorization)
+        await self.session.execute(
+            update(LocalAuthorization)
+            .where(LocalAuthorization._id == local_authorization._id)  # type: ignore
+            .values(
+                _password=local_authorization._password,
+            )
+        )
 
-    async def get_by_user_id(self, id: UserId) -> LocalAuthorization:
-        stmt = select(LocalAuthorization).where(LocalAuthorization.user_id == id)  # type: ignore
+    async def get_by_user_id(self, id: UserId) -> LocalAuthorization | None:
+        stmt = select(LocalAuthorization).where(
+            LocalAuthorization._user_id == id  # type: ignore
+        )
         result = await self.session.execute(stmt)
-        return result.scalar_one()
+        return result.scalar_one_or_none()

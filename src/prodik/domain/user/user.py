@@ -147,6 +147,30 @@ class User(Entity[UserId]):
         )
 
     @property
+    def first_name(self) -> str:
+        return self._first_name.value
+
+    @property
+    def last_name(self) -> str:
+        return self._last_name.value
+
+    @property
+    def age(self) -> int:
+        return self._age.value
+
+    @property
+    def status(self) -> UserStatus:
+        return self._status
+
+    @property
+    def updated_at(self) -> datetime:
+        return self._updated_at
+
+    @property
+    def created_at(self) -> datetime:
+        return self._created_at
+
+    @property
     def email(self) -> str:
         return self._email.value
 

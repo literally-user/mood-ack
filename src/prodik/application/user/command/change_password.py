@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import InvalidCredentialsError, UserSessionRevokedError
+from prodik.application.errors import (
+    InvalidCredentialsError,
+    LocalAuthorizationNotFoundError,
+    UserSessionRevokedError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
@@ -57,6 +61,8 @@ class ChangePasswordInteractor:
                     current_user.id
                 )
             )
+            if local_authorization is None:
+                raise LocalAuthorizationNotFoundError("Local authorization not found")
 
             if not self.password_hasher.verify(
                 local_authorization.password, request.old_password

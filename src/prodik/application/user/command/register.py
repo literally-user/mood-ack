@@ -88,7 +88,6 @@ class RegisterInteractor:
                 ip=user_ip,
                 refresh_token=refresh_token,
             )
-
             await self.user_repository.create(user)
             await self.local_authorization_repository.create(local_authorization)
             await self.user_session_repository.create(user_session)

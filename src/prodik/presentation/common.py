@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 
 from prodik.application.errors import ApplicationError
 from prodik.domain.user.errors import DomainUserValidationError
-from prodik.presentation.root import router as root_router
+from prodik.presentation.api.auth import router as auth_router
+from prodik.presentation.api.root import router as root_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT
@@ -31,6 +32,7 @@ async def application_error_handler(
 
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router)
+    app.include_router(auth_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
