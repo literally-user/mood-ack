@@ -40,8 +40,8 @@ def autogenerate_migrations(*args: str) -> None:
 
 def configure_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="Anti-Frodik",
-        description="Anti-frod application",
+        prog="Mood-Ack",
+        description="A convenient RESTful-API for predicting the sentiment of reviews",
     )
 
     subparsers = parser.add_subparsers(dest="module", required=True)
