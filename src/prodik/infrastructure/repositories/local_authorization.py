@@ -15,11 +15,11 @@ class LocalAuthorizationRepositoryImpl(LocalAuthorizationRepository):
     async def create(self, local_authorization: LocalAuthorization) -> None:
         await self.session.execute(
             insert(LocalAuthorization).values(
-                _id=local_authorization.id,
-                _user_id=local_authorization.user_id,
-                _password=local_authorization.password,
-                _created_at=local_authorization.created_at,
-                _updated_at=local_authorization.updated_at,
+                id=local_authorization.id,
+                user_id=local_authorization.user_id,
+                password=local_authorization.password,
+                created_at=local_authorization.created_at,
+                updated_at=local_authorization.updated_at,
             )
         )
 
@@ -28,7 +28,7 @@ class LocalAuthorizationRepositoryImpl(LocalAuthorizationRepository):
             update(LocalAuthorization)
             .where(LocalAuthorization.id == local_authorization.id)  # type: ignore
             .values(
-                _password=local_authorization.password,
+                password=local_authorization.password,
             )
         )
 

@@ -19,7 +19,7 @@ class UserSessionRepositoryImpl(UserSessionRepository):
         await self.session.execute(
             update(UserSession)
             .where(UserSession.user_id == id)  # type: ignore
-            .values(_status=UserSessionStatus.REVOKED)
+            .values(status=UserSessionStatus.REVOKED)
         )
 
     async def get_by_user_id_and_ip(self, id: UserId, ip: IP) -> UserSession | None:
@@ -38,13 +38,13 @@ class UserSessionRepositoryImpl(UserSessionRepository):
     async def create(self, user_session: UserSession) -> None:
         await self.session.execute(
             insert(UserSession).values(
-                _id=user_session.id,
-                _user_id=user_session.user_id,
-                _ip=user_session.ip,
-                _refresh_token=user_session.refresh_token,
-                _status=user_session.status,
-                _created_at=user_session.created_at,
-                _updated_at=user_session.updated_at,
+                id=user_session.id,
+                user_id=user_session.user_id,
+                ip=user_session.ip,
+                refresh_token=user_session.refresh_token,
+                status=user_session.status,
+                created_at=user_session.created_at,
+                updated_at=user_session.updated_at,
             )
         )
 
@@ -53,10 +53,10 @@ class UserSessionRepositoryImpl(UserSessionRepository):
             update(UserSession)
             .where(UserSession.id == user_session.id)  # type: ignore
             .values(
-                _ip=user_session.ip,
-                _refresh_token=user_session.refresh_token,
-                _status=user_session.status,
-                _updated_at=user_session.updated_at,
+                ip=user_session.ip,
+                refresh_token=user_session.refresh_token,
+                status=user_session.status,
+                updated_at=user_session.updated_at,
             )
         )
 
@@ -66,8 +66,8 @@ class UserSessionRepositoryImpl(UserSessionRepository):
                 update(UserSession)
                 .where(UserSession.id == s.id)  # type: ignore
                 .values(
-                    _status=s.status,
-                    _updated_at=s.updated_at,
+                    status=s.status,
+                    updated_at=s.updated_at,
                 )
             )
 

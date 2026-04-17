@@ -1,4 +1,3 @@
-
 from sqlalchemy import (
     UUID,
     Column,
@@ -105,64 +104,20 @@ def start_mapper() -> None:
     registry_mapper.map_imperatively(
         User,
         user_account_table,
-        properties={
-            "_id": user_account_table.c.id,
-            "_username": user_account_table.c.username,
-            "_first_name": user_account_table.c.first_name,
-            "_last_name": user_account_table.c.last_name,
-            "_email": user_account_table.c.email,
-            "_age": user_account_table.c.age,
-            "_role": user_account_table.c.role,
-            "_status": user_account_table.c.status,
-            "_created_at": user_account_table.c.created_at,
-            "_updated_at": user_account_table.c.updated_at,
-        },
     )
     registry_mapper.map_imperatively(
         Task,
         task_record_table,
-        properties={
-            "_id": task_record_table.c.id,
-            "_owner_id": task_record_table.c.owner_id,
-            "_state": task_record_table.c.state,
-            "_input_type": task_record_table.c.input_type,
-            "_input_id": task_record_table.c.input_id,
-            "_result": task_record_table.c.result,
-            "_created_at": task_record_table.c.created_at,
-            "_updated_at": task_record_table.c.updated_at,
-        },
     )
     registry_mapper.map_imperatively(
         UserSession,
         user_session_table,
-        properties={
-            "_id": user_session_table.c.id,
-            "_user_id": user_session_table.c.user_id,
-            "_ip": user_session_table.c.ip,
-            "_refresh_token": user_session_table.c.refresh_token,
-            "_status": user_session_table.c.status,
-            "_created_at": user_session_table.c.created_at,
-            "_updated_at": user_session_table.c.updated_at,
-        },
     )
     registry_mapper.map_imperatively(
         LocalAuthorization,
         local_authorization_table,
-        properties={
-            "_id": local_authorization_table.c.id,
-            "_user_id": local_authorization_table.c.user_id,
-            "_password": local_authorization_table.c.password,
-            "_created_at": local_authorization_table.c.created_at,
-            "_updated_at": local_authorization_table.c.updated_at,
-        },
     )
     registry_mapper.map_imperatively(
         OAuthAuthorization,
         oauth_authorization_table,
-        properties={
-            "_id": oauth_authorization_table.c.id,
-            "_user_id": oauth_authorization_table.c.user_id,
-            "_created_at": oauth_authorization_table.c.created_at,
-            "_updated_at": oauth_authorization_table.c.updated_at,
-        },
     )

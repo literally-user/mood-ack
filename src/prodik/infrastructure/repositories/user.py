@@ -14,16 +14,16 @@ class UserRepositoryImpl(UserRepository):
     async def create(self, user: User) -> None:
         await self.session.execute(
             insert(User).values(
-                _id=user.id,
-                _username=user.username,
-                _first_name=user.first_name,
-                _last_name=user.last_name,
-                _email=user.email,
-                _age=user.age,
-                _role=user.role,
-                _status=user.status,
-                _created_at=user.created_at,
-                _updated_at=user.updated_at,
+                id=user.id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
+                age=user.age,
+                role=user.role,
+                status=user.status,
+                created_at=user.created_at,
+                updated_at=user.updated_at,
             )
         )
 
@@ -32,14 +32,14 @@ class UserRepositoryImpl(UserRepository):
             update(User)
             .where(User.id == user.id)  # type: ignore
             .values(
-                _username=user.username,
-                _first_name=user.first_name,
-                _last_name=user.last_name,
-                _email=user.email,
-                _age=user.age,
-                _role=user.role,
-                _status=user.status,
-                _updated_at=user.updated_at,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
+                age=user.age,
+                role=user.role,
+                status=user.status,
+                updated_at=user.updated_at,
             )
         )
 

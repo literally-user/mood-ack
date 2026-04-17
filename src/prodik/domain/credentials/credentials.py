@@ -33,10 +33,10 @@ class IP(ValueObject[str]):
 
 @dataclass(kw_only=True)
 class UserSession(Entity[UserSessionId]):
-    _ip: IP
-    _user_id: UserId
-    _refresh_token: str
-    _status: UserSessionStatus
+    ip: IP
+    user_id: UserId
+    refresh_token: str
+    status: UserSessionStatus
 
     @classmethod
     def new(
@@ -48,42 +48,14 @@ class UserSession(Entity[UserSessionId]):
     ) -> "UserSession":
         now = datetime.now(tz=UTC)
         return UserSession(
-            _id=id,
-            _ip=IP(ip),
-            _user_id=user.id,
-            _refresh_token=refresh_token,
-            _status=UserSessionStatus.ACTIVE,
-            _created_at=now,
-            _updated_at=now,
+            id=id,
+            ip=IP(ip),
+            user_id=user.id,
+            refresh_token=refresh_token,
+            status=UserSessionStatus.ACTIVE,
+            created_at=now,
+            updated_at=now,
         )
-
-    @property
-    def id(self) -> UserSessionId:
-        return self._id
-
-    @property
-    def created_at(self) -> datetime:
-        return self._created_at
-
-    @property
-    def updated_at(self) -> datetime:
-        return self._updated_at
-
-    @property
-    def ip(self) -> IP:
-        return self._ip
-
-    @property
-    def status(self) -> UserSessionStatus:
-        return self._status
-
-    @property
-    def user_id(self) -> UserId:
-        return self._user_id
-
-    @property
-    def refresh_token(self) -> str:
-        return self._refresh_token
 
     def is_revoked(self) -> bool:
         return self._status == UserSessionStatus.REVOKED
@@ -103,8 +75,8 @@ class UserSession(Entity[UserSessionId]):
 
 @dataclass(kw_only=True)
 class LocalAuthorization(Entity[LocalAuthorizationId]):
-    _user_id: UserId
-    _password: str
+    user_id: UserId
+    password: str
 
     @classmethod
     def new(
@@ -112,52 +84,28 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
     ) -> "LocalAuthorization":
         now = datetime.now(tz=UTC)
         return LocalAuthorization(
-            _id=id,
-            _user_id=user.id,
-            _password=password,
-            _created_at=now,
-            _updated_at=now,
+            id=id,
+            user_id=user.id,
+            password=password,
+            created_at=now,
+            updated_at=now,
         )
 
-    @property
-    def id(self) -> LocalAuthorizationId:
-        return self._id
-
-    @property
-    def password(self) -> str:
-        return self._password
-
-    @property
-    def user_id(self) -> UserId:
-        return self._user_id
-
-    @property
-    def created_at(self) -> datetime:
-        return self._created_at
-
-    @property
-    def updated_at(self) -> datetime:
-        return self._updated_at
-
     def change_password(self, new_password: str) -> None:
-        self._password = new_password
+        self.password = new_password
         self.touch()
 
 
 @dataclass(kw_only=True)
 class OAuthAuthorization(Entity[OAuthAuthorizationId]):
-    _user_id: UserId
+    user_id: UserId
 
     @classmethod
     def new(cls, id: OAuthAuthorizationId, user: User) -> "OAuthAuthorization":
         now = datetime.now(tz=UTC)
         return OAuthAuthorization(
-            _id=id,
-            _user_id=user.id,
-            _created_at=now,
-            _updated_at=now,
+            id=id,
+            user_id=user.id,
+            created_at=now,
+            updated_at=now,
         )
-
-    @property
-    def user_id(self) -> UserId:
-        return self._user_id

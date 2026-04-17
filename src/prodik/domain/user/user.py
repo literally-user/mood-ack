@@ -114,13 +114,13 @@ class Age(ValueObject[int]):
 
 @dataclass(kw_only=True)
 class User(Entity[UserId]):
-    _username: Username
-    _first_name: FirstName
-    _last_name: LastName
-    _email: Email
-    _age: Age
-    _role: UserRole
-    _status: UserStatus
+    username: Username
+    first_name: FirstName
+    last_name: LastName
+    email: Email
+    age: Age
+    role: UserRole
+    status: UserStatus
 
     @classmethod
     def new(
@@ -134,57 +134,17 @@ class User(Entity[UserId]):
     ) -> "User":
         now = datetime.now(tz=UTC)
         return User(
-            _id=id,
-            _username=Username(username),
-            _first_name=FirstName(first_name),
-            _last_name=LastName(last_name),
-            _email=Email(email),
-            _age=Age(age),
-            _role=UserRole.USER,
-            _status=UserStatus.ACTIVE,
-            _created_at=now,
-            _updated_at=now,
+            id=id,
+            username=Username(username),
+            first_name=FirstName(first_name),
+            last_name=LastName(last_name),
+            email=Email(email),
+            age=Age(age),
+            role=UserRole.USER,
+            status=UserStatus.ACTIVE,
+            created_at=now,
+            updated_at=now,
         )
-
-    @property
-    def first_name(self) -> FirstName:
-        return self._first_name
-
-    @property
-    def last_name(self) -> LastName:
-        return self._last_name
-
-    @property
-    def age(self) -> Age:
-        return self._age
-
-    @property
-    def status(self) -> UserStatus:
-        return self._status
-
-    @property
-    def updated_at(self) -> datetime:
-        return self._updated_at
-
-    @property
-    def created_at(self) -> datetime:
-        return self._created_at
-
-    @property
-    def email(self) -> Email:
-        return self._email
-
-    @property
-    def username(self) -> Username:
-        return self._username
-
-    @property
-    def role(self) -> UserRole:
-        return self._role
-
-    @property
-    def id(self) -> UserId:
-        return self._id
 
     def change_username(self, username: str) -> None:
         self._username = Username(username)

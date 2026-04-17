@@ -6,20 +6,20 @@ from uuid import UUID
 
 @dataclass(kw_only=True)
 class Entity[EntityId: UUID]:
-    _id: EntityId
-    _created_at: datetime
-    _updated_at: datetime
+    id: EntityId
+    created_at: datetime
+    updated_at: datetime
 
     @override
     def __eq__(self, value: object) -> bool:
         if isinstance(value, Entity):
-            return cast("bool", self._id == value._id)
+            return cast("bool", self.id == value.id)
 
         return NotImplemented
 
     @override
     def __hash__(self) -> int:
-        return hash(self._id)
+        return hash(self.id)
 
     def touch(self) -> None:
         now = datetime.now(tz=UTC)

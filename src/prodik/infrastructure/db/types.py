@@ -1,9 +1,10 @@
-from typing import Any, override
+from typing import Any, ClassVar, override
 
 from sqlalchemy import Dialect, Integer, String
 from sqlalchemy.types import TypeDecorator
 
 from prodik.domain.credentials import IP
+from prodik.domain.shared import ValueObject
 from prodik.domain.user import (
     Age,
     Email,
@@ -13,121 +14,52 @@ from prodik.domain.user import (
 )
 
 
-class UsernameType(TypeDecorator[Username]):
-    impl = String
-    cache_ok = True
-
-    def process_bind_param(
-        self,
-        value: Username | None,
-        dialect: Dialect,
-    ) -> str | None:
-        if value is None:
-            return None
-
-        return value.value
-
-    def process_result_value(
-        self,
-        value: str | None,
-        dialect: Dialect,
-    ) -> Username | None:
-        if value is None:
-            return None
-
-        return Username(value)
-
-
-class FirstNameType(TypeDecorator[FirstName]):
-    impl = String
-    cache_ok = True
+class BaseVOTypeDecorator[T: ValueObject[Any]](TypeDecorator[T]):
+    vo_class: ClassVar[type]
 
     @override
-    def process_bind_param(self, value: FirstName | None, dialect: Dialect) -> Any:
+    def process_bind_param(self, value: T | None, dialect: Dialect) -> Any:
         if value is None:
             return None
 
         return value.value
 
     @override
-    def process_result_value(
-        self, value: Any | None, dialect: Dialect
-    ) -> FirstName | None:
-        if value is None:
-            return None
-
-        return FirstName(value)
+    def process_result_value(self, value: Any | None, dialect: Dialect) -> T | None:
+        return self.vo_class(value) if value else None
 
 
-class LastNameType(TypeDecorator[LastName]):
+class UsernameType(BaseVOTypeDecorator[Username]):
     impl = String
     cache_ok = True
-
-    @override
-    def process_bind_param(self, value: LastName | None, dialect: Dialect) -> Any:
-        if value is None:
-            return None
-
-        return value.value
-
-    @override
-    def process_result_value(
-        self, value: Any | None, dialect: Dialect
-    ) -> LastName | None:
-        if value is None:
-            return None
-
-        return LastName(value)
+    vo_class = Username
 
 
-class EmailType(TypeDecorator[Email]):
+class FirstNameType(BaseVOTypeDecorator[FirstName]):
     impl = String
     cache_ok = True
-
-    @override
-    def process_bind_param(self, value: Email | None, dialect: Dialect) -> Any:
-        if value is None:
-            return None
-
-        return value.value
-
-    @override
-    def process_result_value(self, value: Any | None, dialect: Dialect) -> Email | None:
-        if value is None:
-            return None
-
-        return Email(value)
+    vo_class = FirstName
 
 
-class AgeType(TypeDecorator[Age]):
+class LastNameType(BaseVOTypeDecorator[LastName]):
+    impl = String
+    cache_ok = True
+    vo_class = LastName
+
+
+class AgeType(BaseVOTypeDecorator[Age]):
     impl = Integer
     cache_ok = True
-
-    def process_bind_param(self, value: Age | None, dialect: Dialect) -> Any:
-        if value is None:
-            return None
-
-        return value.value
-
-    def process_result_value(self, value: Any | None, dialect: Dialect) -> Age | None:
-        if value is None:
-            return None
-
-        return Age(value)
+    vo_class = Age
 
 
-class IPType(TypeDecorator[IP]):
+class IPType(BaseVOTypeDecorator[IP]):
     impl = String(36)
     cache_ok = True
+    vo_class = IP
 
-    def process_bind_param(self, value: IP | None, dialect: Dialect) -> Any:
-        if value is None:
-            return None
 
-        return value.value
-
-    def process_result_value(self, value: Any | None, dialect: Dialect) -> IP | None:
-        if value is None:
-            return None
-
-        return IP(value)
+class EmailType(BaseVOTypeDecorator[Email]):
+    impl = String
+    cache_ok = True
+    vo_class = Email
