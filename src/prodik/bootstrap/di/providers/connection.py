@@ -2,7 +2,7 @@ from collections.abc import AsyncIterator
 
 from aioboto3.session import Session as AiobotoSession
 from aiobotocore.client import AioBaseClient
-from dishka import AnyOf, Provider, Scope, provide
+from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.infrastructure.config import ObjectStorageConfig, PersistenceConfig
 
 
@@ -35,7 +34,7 @@ class ConnectionProvider(Provider):
     async def get_async_session(
         self,
         session_factory: async_sessionmaker[AsyncSession],
-    ) -> AsyncIterator[AnyOf[AsyncSession, TransactionManager]]:
+    ) -> AsyncIterator[AsyncSession]:
         async with session_factory() as session:
             yield session
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-router = APIRouter(prefix="/auth", tags=["root"])
+router = APIRouter(tags=["root"])
 
 
 @router.get("/ping")

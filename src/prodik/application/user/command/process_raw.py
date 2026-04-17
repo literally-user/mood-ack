@@ -6,7 +6,7 @@ from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.domain.task import RawInput, Task, TaskId
+from prodik.domain.task import RawInput, RawInputId, Task, TaskId
 
 
 @dataclass
@@ -23,10 +23,14 @@ class ProcessRawInteractor:
                 raise UserSessionRevokedError("Session was revoked")
             current_user = await self.idp.get_current_user()
 
+            raw_input = RawInput.new(
+                id=RawInputId(uuid4()),
+                content=text,
+            )
             task = Task.new(
                 id=TaskId(uuid4()),
                 owner=current_user,
-                input=RawInput(text),
+                input=raw_input,
             )
 
             task.set_result(self.predicting_model.process(text, task))

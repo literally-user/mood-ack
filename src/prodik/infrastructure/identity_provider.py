@@ -12,7 +12,7 @@ from prodik.application.interfaces.repositories import (
 )
 from prodik.application.interfaces.token_manager import AccessTokenManager, UserData
 from prodik.domain.credentials import IP, UserSession
-from prodik.domain.user import User
+from prodik.domain.user import User, UserId
 
 TOKEN_HEADER_PARTS: Final[int] = 2
 TOKEN_TYPE = "Bearer"  # noqa: S105
@@ -44,15 +44,15 @@ class IdentityProviderImpl(IdentityProvider):
 
         return data
 
-    def _get_client_ip(self) -> IP:
+    def get_current_ip(self) -> str:
         client = self._request.client
         if client is None:
             raise RuntimeError("Cannot determine client IP")
-        return IP(client.host)
+        return client.host
 
     async def get_current_user(self) -> User:
         data = self._get_token_data()
-        user = await self._user_repository.get_by_uuid(data.uuid)
+        user = await self._user_repository.get_by_uuid(UserId(data.uuid))
         if user is None:
             raise InvalidCredentialsError("Invalid authorization header format")
 
@@ -60,12 +60,12 @@ class IdentityProviderImpl(IdentityProvider):
 
     async def get_current_session(self) -> UserSession:
         data = self._get_token_data()
-        user = await self._user_repository.get_by_uuid(data.uuid)
+        user = await self._user_repository.get_by_uuid(UserId(data.uuid))
         if user is None:
             raise InvalidCredentialsError("Invalid authorization header format")
 
         session = await self._user_session_repository.get_by_user_id_and_ip(
-            user.id, self._get_client_ip()
+            user.id, IP(self.get_current_ip())
         )
         if session is None:
             raise InvalidCredentialsError("Invalid authorization header format")

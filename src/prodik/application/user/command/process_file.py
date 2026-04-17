@@ -11,7 +11,7 @@ from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.domain.task import FileId, FileInput, Task, TaskId
+from prodik.domain.task import FileId, FileInput, FileInputId, Task, TaskId
 from prodik.infrastructure.registries import FileProcessingRegistry
 
 
@@ -43,8 +43,14 @@ class ProcessFileInteractor:
 
             readable_content = file_process_client.process(file_meta.content)
 
+            file_input = FileInput.new(
+                id=FileInputId(uuid4()),
+                file_id=file_id,
+            )
             task = Task.new(
-                id=TaskId(uuid4()), owner=current_user, input=FileInput(file_id)
+                id=TaskId(uuid4()),
+                owner=current_user,
+                input=file_input,
             )
 
             task.set_result(self.predicting_model.process(readable_content, task))

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import uuid4
 
 from prodik.application.errors import UserAlreadyExistsError
+from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
     LocalAuthorizationRepository,
@@ -31,7 +32,6 @@ class RegisterRequestDTO:
     email: str
     password: str
     age: int
-    ip: str
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -51,10 +51,12 @@ class RegisterInteractor:
     password_hasher: PasswordHasher
     user_repository: UserRepository
     tx_manager: TransactionManager
+    idp: IdentityProvider
     config: APIConfig
 
     async def execute(self, request: RegisterRequestDTO) -> RegisterResponseDTO:
         async with self.tx_manager:
+            user_ip = self.idp.get_current_ip()
             user = await self.user_repository.get_by_email(Email(request.email))
             if user is not None:
                 raise UserAlreadyExistsError("User already exists")
@@ -83,10 +85,9 @@ class RegisterInteractor:
             user_session = UserSession.new(
                 id=UserSessionId(uuid4()),
                 user=user,
-                ip=request.ip,
+                ip=user_ip,
                 refresh_token=refresh_token,
             )
-
             await self.user_repository.create(user)
             await self.local_authorization_repository.create(local_authorization)
             await self.user_session_repository.create(user_session)

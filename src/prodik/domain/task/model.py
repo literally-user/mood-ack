@@ -17,22 +17,14 @@ MIN_ALLOWED_TASK_RESULT: Final[float] = 0.0
 
 TaskId = NewType("TaskId", UUID)
 FileId = NewType("FileId", UUID)
+FileInputId = NewType("FileInputId", UUID)
+RawInputId = NewType("RawInputId", UUID)
 
 
 class TaskState(StrEnum):
+    DEPRECATED = "DEPRECATED"
     PENDING = "PENDING"
     DONE = "DONE"
-    DEPRECATED = "DEPRECATED"
-
-
-class FileInput(ValueObject[FileId]):
-    def __init__(self, value: FileId) -> None:
-        super().__init__(value)
-
-
-class RawInput(ValueObject[str]):
-    def __init__(self, value: str) -> None:
-        super().__init__(value)
 
 
 class TaskResult(ValueObject[float]):
@@ -48,45 +40,72 @@ class TaskResult(ValueObject[float]):
         super().__init__(value)
 
 
+class InputType(StrEnum):
+    FILE = "FILE"
+    RAW = "RAW"
+
+
+@dataclass
+class FileInput(Entity[FileInputId]):
+    file_id: FileId
+
+    @classmethod
+    def new(cls, id: FileInputId, file_id: FileId) -> "FileInput":
+        now = datetime.now(tz=UTC)
+        return FileInput(
+            id=id,
+            file_id=file_id,
+            created_at=now,
+            updated_at=now,
+        )
+
+
+@dataclass
+class RawInput(Entity[RawInputId]):
+    content: str
+
+    @classmethod
+    def new(cls, id: RawInputId, content: str) -> "RawInput":
+        now = datetime.now(tz=UTC)
+        return RawInput(
+            id=id,
+            content=content,
+            created_at=now,
+            updated_at=now,
+        )
+
+
 @dataclass
 class Task(Entity[TaskId]):
-    _owner_id: UserId
-    _state: TaskState
-    _input: FileInput | RawInput
-    _result: TaskResult | None
+    owner_id: UserId
+    state: TaskState
+    input_type: InputType
+    input_id: RawInputId | FileInputId
+    result: TaskResult | None
 
     @classmethod
     def new(cls, id: TaskId, owner: User, input: FileInput | RawInput) -> "Task":
         now = datetime.now(tz=UTC)
         return Task(
-            _id=id,
-            _owner_id=owner.id,
-            _state=TaskState.PENDING,
-            _input=input,
-            _result=None,
-            _created_at=now,
-            _updated_at=now,
+            id=id,
+            owner_id=owner.id,
+            state=TaskState.PENDING,
+            input_type=InputType.FILE
+            if isinstance(input, FileInput)
+            else InputType.RAW,
+            input_id=input.id,
+            result=None,
+            created_at=now,
+            updated_at=now,
         )
 
-    @property
-    def id(self) -> TaskId:
-        return self._id
-
-    @property
-    def state(self) -> TaskState:
-        return self._state
-
     def deprecate(self) -> None:
-        if self._state == TaskState.DONE:
+        if self.state == TaskState.DONE:
             raise CannotDeprecateFinishedTaskError("Finished task cannot be deprecated")
-        self._state = TaskState.DEPRECATED
+        self.state = TaskState.DEPRECATED
         self.touch()
 
     def set_result(self, result: float) -> None:
-        self._result = TaskResult(result)
-        self._state = TaskState.DONE
+        self.result = TaskResult(result)
+        self.state = TaskState.DONE
         self.touch()
-
-    @property
-    def owner_id(self) -> UserId:
-        return self._owner_id
