@@ -12,7 +12,6 @@ from prodik.application.interfaces.token_manager import (
     RefreshTokenManager,
 )
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.domain.credentials import IP
 from prodik.infrastructure.config import APIConfig
 
 
@@ -20,8 +19,6 @@ from prodik.infrastructure.config import APIConfig
 class ChangePasswordRequestDTO:
     old_password: str
     new_password: str
-
-    ip: IP
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)

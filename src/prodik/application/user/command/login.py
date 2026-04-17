@@ -6,6 +6,7 @@ from prodik.application.errors import (
     UserDeactivatedError,
     UserNotFoundError,
 )
+from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
     LocalAuthorizationRepository,
@@ -26,7 +27,6 @@ from prodik.infrastructure.config import APIConfig
 class LoginRequestDTO:
     password: str
     email: str
-    ip: str
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -46,10 +46,12 @@ class LoginInteractor:
     user_repository: UserRepository
     local_authorization_repository: LocalAuthorizationRepository
     user_session_repository: UserSessionRepository
+    idp: IdentityProvider
     config: APIConfig
 
     async def execute(self, request: LoginRequestDTO) -> LoginResponseDTO:
         async with self.tx_manager:
+            user_ip = self.idp.get_current_ip()
             user = await self.user_repository.get_by_email(Email(request.email))
             if user is None:
                 raise UserNotFoundError("Invalid email or password")
@@ -71,14 +73,14 @@ class LoginInteractor:
                 user, expires_in=self.config.expires_in
             )
             user_session = await self.user_session_repository.get_by_user_id_and_ip(
-                user.id, IP(request.ip)
+                user.id, IP(user_ip)
             )
             if user_session is None:
                 await self.user_session_repository.create(
                     UserSession.new(
                         id=UserSessionId(uuid4()),
                         user=user,
-                        ip=request.ip,
+                        ip=user_ip,
                         refresh_token=refresh_token,
                     )
                 )

@@ -44,11 +44,11 @@ class IdentityProviderImpl(IdentityProvider):
 
         return data
 
-    def _get_client_ip(self) -> IP:
+    def get_current_ip(self) -> str:
         client = self._request.client
         if client is None:
             raise RuntimeError("Cannot determine client IP")
-        return IP(client.host)
+        return client.host
 
     async def get_current_user(self) -> User:
         data = self._get_token_data()
@@ -65,7 +65,7 @@ class IdentityProviderImpl(IdentityProvider):
             raise InvalidCredentialsError("Invalid authorization header format")
 
         session = await self._user_session_repository.get_by_user_id_and_ip(
-            user.id, self._get_client_ip()
+            user.id, IP(self.get_current_ip())
         )
         if session is None:
             raise InvalidCredentialsError("Invalid authorization header format")

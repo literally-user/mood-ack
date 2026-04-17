@@ -6,6 +6,7 @@ from prodik.application.errors import (
     UnsupportedProviderError,
     UserDeactivatedError,
 )
+from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import (
     OAuthAuthorizationRepository,
     UserRepository,
@@ -41,10 +42,11 @@ class OAuthLoginInteractor:
     refresh_token_manager: RefreshTokenManager
     access_token_manager: AccessTokenManager
     user_repository: UserRepository
+    idp: IdentityProvider
     config: APIConfig
 
     async def execute(
-        self, authorization_code: str, state_token: str, ip: str
+        self, authorization_code: str, state_token: str
     ) -> OAuthLoginResponseDTO:
         provider = self.state_token_manager.decode(state_token).provider
         client = self.client_registry.get_client(provider)
@@ -54,6 +56,7 @@ class OAuthLoginInteractor:
         client_data = await client.exchange_code(authorization_code)
         oauth_data = self.oauth_token_manager.decode(client_data.token_id)
 
+        user_ip = self.idp.get_current_ip()
         user = await self.user_repository.get_by_email(Email(oauth_data.email))
         if user is None:
             raise InvalidCredentialsError("Invalid email or password")
@@ -66,14 +69,14 @@ class OAuthLoginInteractor:
             user, expires_in=self.config.expires_in
         )
         user_session = await self.user_session_repository.get_by_user_id_and_ip(
-            user.id, IP(ip)
+            user.id, IP(user_ip)
         )
         if user_session is None:
             await self.user_session_repository.create(
                 UserSession.new(
                     id=UserSessionId(uuid4()),
                     user=user,
-                    ip=ip,
+                    ip=user_ip,
                     refresh_token=refresh_token,
                 )
             )
