@@ -147,16 +147,16 @@ class User(Entity[UserId]):
         )
 
     @property
-    def first_name(self) -> str:
-        return self._first_name.value
+    def first_name(self) -> FirstName:
+        return self._first_name
 
     @property
-    def last_name(self) -> str:
-        return self._last_name.value
+    def last_name(self) -> LastName:
+        return self._last_name
 
     @property
-    def age(self) -> int:
-        return self._age.value
+    def age(self) -> Age:
+        return self._age
 
     @property
     def status(self) -> UserStatus:
@@ -171,12 +171,12 @@ class User(Entity[UserId]):
         return self._created_at
 
     @property
-    def email(self) -> str:
-        return self._email.value
+    def email(self) -> Email:
+        return self._email
 
     @property
-    def username(self) -> str:
-        return self._username.value
+    def username(self) -> Username:
+        return self._username
 
     @property
     def role(self) -> UserRole:

@@ -15,26 +15,26 @@ class LocalAuthorizationRepositoryImpl(LocalAuthorizationRepository):
     async def create(self, local_authorization: LocalAuthorization) -> None:
         await self.session.execute(
             insert(LocalAuthorization).values(
-                _id=local_authorization._id,
-                _user_id=local_authorization._user_id,
-                _password=local_authorization._password,
-                _created_at=local_authorization._created_at,
-                _updated_at=local_authorization._updated_at,
+                _id=local_authorization.id,
+                _user_id=local_authorization.user_id,
+                _password=local_authorization.password,
+                _created_at=local_authorization.created_at,
+                _updated_at=local_authorization.updated_at,
             )
         )
 
     async def update(self, local_authorization: LocalAuthorization) -> None:
         await self.session.execute(
             update(LocalAuthorization)
-            .where(LocalAuthorization._id == local_authorization._id)  # type: ignore
+            .where(LocalAuthorization.id == local_authorization.id)  # type: ignore
             .values(
-                _password=local_authorization._password,
+                _password=local_authorization.password,
             )
         )
 
     async def get_by_user_id(self, id: UserId) -> LocalAuthorization | None:
         stmt = select(LocalAuthorization).where(
-            LocalAuthorization._user_id == id  # type: ignore
+            LocalAuthorization.user_id == id  # type: ignore
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

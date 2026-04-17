@@ -70,8 +70,8 @@ class UserSession(Entity[UserSessionId]):
         return self._updated_at
 
     @property
-    def ip(self) -> str:
-        return self._ip.value
+    def ip(self) -> IP:
+        return self._ip
 
     @property
     def status(self) -> UserSessionStatus:
@@ -130,6 +130,14 @@ class LocalAuthorization(Entity[LocalAuthorizationId]):
     @property
     def user_id(self) -> UserId:
         return self._user_id
+
+    @property
+    def created_at(self) -> datetime:
+        return self._created_at
+
+    @property
+    def updated_at(self) -> datetime:
+        return self._updated_at
 
     def change_password(self, new_password: str) -> None:
         self._password = new_password

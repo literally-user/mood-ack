@@ -18,45 +18,45 @@ class UserSessionRepositoryImpl(UserSessionRepository):
     async def revoke_all_by_user_id(self, id: UserId) -> None:
         await self.session.execute(
             update(UserSession)
-            .where(UserSession._user_id == id)  # type: ignore
+            .where(UserSession.user_id == id)  # type: ignore
             .values(_status=UserSessionStatus.REVOKED)
         )
 
     async def get_by_user_id_and_ip(self, id: UserId, ip: IP) -> UserSession | None:
         stmt = select(UserSession).where(
-            UserSession._user_id == id,  # type: ignore
-            UserSession._ip == ip,  # type: ignore
+            UserSession.user_id == id,  # type: ignore
+            UserSession.ip == ip,  # type: ignore
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_all_by_user_id(self, id: UserId) -> list[UserSession]:
-        stmt = select(UserSession).where(UserSession._user_id == id)  # type: ignore
+        stmt = select(UserSession).where(UserSession.user_id == id)  # type: ignore
         result = await self.session.execute(stmt)
         return list(result.scalars())
 
     async def create(self, user_session: UserSession) -> None:
         await self.session.execute(
             insert(UserSession).values(
-                _id=user_session._id,
-                _user_id=user_session._user_id,
-                _ip=user_session._ip,
-                _refresh_token=user_session._refresh_token,
-                _status=user_session._status,
-                _created_at=user_session._created_at,
-                _updated_at=user_session._updated_at,
+                _id=user_session.id,
+                _user_id=user_session.user_id,
+                _ip=user_session.ip,
+                _refresh_token=user_session.refresh_token,
+                _status=user_session.status,
+                _created_at=user_session.created_at,
+                _updated_at=user_session.updated_at,
             )
         )
 
     async def update(self, user_session: UserSession) -> None:
         await self.session.execute(
             update(UserSession)
-            .where(UserSession._id == user_session._id)  # type: ignore
+            .where(UserSession.id == user_session.id)  # type: ignore
             .values(
-                _ip=user_session._ip,
-                _refresh_token=user_session._refresh_token,
-                _status=user_session._status,
-                _updated_at=user_session._updated_at,
+                _ip=user_session.ip,
+                _refresh_token=user_session.refresh_token,
+                _status=user_session.status,
+                _updated_at=user_session.updated_at,
             )
         )
 
@@ -64,16 +64,16 @@ class UserSessionRepositoryImpl(UserSessionRepository):
         for s in user_sessions:
             await self.session.execute(
                 update(UserSession)
-                .where(UserSession._id == s._id)  # type: ignore
+                .where(UserSession.id == s.id)  # type: ignore
                 .values(
-                    _status=s._status,
-                    _updated_at=s._updated_at,
+                    _status=s.status,
+                    _updated_at=s.updated_at,
                 )
             )
 
     async def get_by_token(self, refresh_token: str) -> UserSession | None:
         stmt = select(UserSession).where(
-            UserSession._refresh_token == refresh_token  # type: ignore
+            UserSession.refresh_token == refresh_token  # type: ignore
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

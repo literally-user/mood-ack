@@ -14,52 +14,52 @@ class UserRepositoryImpl(UserRepository):
     async def create(self, user: User) -> None:
         await self.session.execute(
             insert(User).values(
-                _id=user._id,
-                _username=user._username,
-                _first_name=user._first_name,
-                _last_name=user._last_name,
-                _email=user._email,
-                _age=user._age,
-                _role=user._role,
-                _status=user._status,
-                _created_at=user._created_at,
-                _updated_at=user._updated_at,
+                _id=user.id,
+                _username=user.username,
+                _first_name=user.first_name,
+                _last_name=user.last_name,
+                _email=user.email,
+                _age=user.age,
+                _role=user.role,
+                _status=user.status,
+                _created_at=user.created_at,
+                _updated_at=user.updated_at,
             )
         )
 
     async def update(self, user: User) -> None:
         await self.session.execute(
             update(User)
-            .where(User._id == user._id)  # type: ignore
+            .where(User.id == user.id)  # type: ignore
             .values(
-                _username=user._username,
-                _first_name=user._first_name,
-                _last_name=user._last_name,
-                _email=user._email,
-                _age=user._age,
-                _role=user._role,
-                _status=user._status,
-                _updated_at=user._updated_at,
+                _username=user.username,
+                _first_name=user.first_name,
+                _last_name=user.last_name,
+                _email=user.email,
+                _age=user.age,
+                _role=user.role,
+                _status=user.status,
+                _updated_at=user.updated_at,
             )
         )
 
     async def delete(self, user: User) -> None:
         await self.session.execute(
-            delete(User).where(User._id == user._id)  # type: ignore
+            delete(User).where(User.id == user.id)  # type: ignore
         )
 
     async def get_by_uuid(self, id: UserId) -> User | None:
-        stmt = select(User).where(User._id == id)  # type: ignore
+        stmt = select(User).where(User.id == id)  # type: ignore
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_by_email(self, email: Email) -> User | None:
-        stmt = select(User).where(User._email == email)  # type: ignore
+        stmt = select(User).where(User.email == email)  # type: ignore
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_by_username(self, username: Username) -> User | None:
-        stmt = select(User).where(User._username == username)  # type: ignore
+        stmt = select(User).where(User.username == username)  # type: ignore
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
