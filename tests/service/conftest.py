@@ -28,10 +28,6 @@ async def test_config() -> Config:
     
     return config
 
-@pytest.fixture(scope="session")
-def engine(test_config: Config):
-    return create_async_engine(test_config.persistence.url)
-
 @pytest.fixture
 async def test_session(test_config: Config) -> AsyncGenerator[AsyncSession]:
     engine = create_async_engine(test_config.persistence.url)
