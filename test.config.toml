@@ -1,0 +1,14 @@
+[api]
+host = "0.0.0.0"
+port = 8000
+
+persistence = "postgresql+asyncpg://postgres:admin_password@localhost:5432/postgres"
+secret = "AAAAAAAAAABBBBBBBBBB"
+expires_in = 3600
+
+[object_storage]
+url = "files.literally.io"
+secret_key = "admin_password"
+access_key = "admin"
+region = "RU-SPB"
+bucket = "ml"

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class APIConfig:
     host: str
     port: int
@@ -14,12 +14,12 @@ class APIConfig:
     expires_in: int
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class PersistenceConfig:
     url: str
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class ObjectStorageConfig:
     bucket: str
     access_key: str
@@ -28,7 +28,7 @@ class ObjectStorageConfig:
     url: str
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class Config:
     api: APIConfig
     persistence: PersistenceConfig
@@ -36,7 +36,10 @@ class Config:
 
 
 def load_config() -> Config:
-    config_path = Path("config.toml")  # объект Path
+    path = os.environ.get("CONFIG")
+    if path is None:
+        path = "config.toml"
+    config_path = Path(path)
     with config_path.open("rb") as file:
         config = tomllib.load(file)
         return Config(
