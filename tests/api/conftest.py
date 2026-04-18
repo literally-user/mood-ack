@@ -1,28 +1,34 @@
-from typing import AsyncGenerator, AsyncIterator, Final
-from unittest.mock import AsyncMock
-from threading import Thread
 import os
+from collections.abc import AsyncGenerator
+from threading import Thread
+from unittest.mock import AsyncMock
 
 import pytest
-from sqlalchemy import text
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine
-from dishka import Provider, AsyncContainer, make_async_container, provide, Scope
+from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 from dishka.integrations.fastapi import FastapiProvider
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
-from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api import create_app
-from prodik.infrastructure.config import load_config, Config, APIConfig, PersistenceConfig, ObjectStorageConfig
+from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.di.providers.application import ApplicationProvider
-from prodik.bootstrap.di.providers.connection import S3Provider
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
+from prodik.infrastructure.config import (
+    APIConfig,
+    Config,
+    ObjectStorageConfig,
+    PersistenceConfig,
+    load_config,
+)
 
 
 @pytest.fixture(scope="session")
 def test_config() -> Config:
-    os.environ['CONFIG'] = "test.config.toml"
+    os.environ["CONFIG"] = "test.config.toml"
     config = load_config()
     return config
+
 
 @pytest.fixture(scope="session")
 async def test_engine(test_config: Config) -> AsyncGenerator[AsyncEngine]:
@@ -40,15 +46,19 @@ async def test_engine(test_config: Config) -> AsyncGenerator[AsyncEngine]:
 
     await engine.dispose()
 
+
 @pytest.fixture
 async def test_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession]:
-    async with (AsyncSession(test_engine) as session, session.begin()):
-        session.commit = AsyncMock() # type: ignore[method-assign]
+    async with AsyncSession(test_engine) as session, session.begin():
+        session.commit = AsyncMock()  # type: ignore[method-assign]
         yield session
         await session.rollback()
 
+
 @pytest.fixture
-async def test_dishka_container(test_session: AsyncSession, test_config: Config) -> AsyncContainer:
+async def test_dishka_container(
+    test_session: AsyncSession, test_config: Config
+) -> AsyncContainer:
     class TestDishkaProvider(Provider):
         override = True
 
@@ -71,12 +81,11 @@ async def test_dishka_container(test_session: AsyncSession, test_config: Config)
     return container
 
 
-@pytest.fixture()
+@pytest.fixture
 async def test_client() -> AsyncGenerator[AsyncClient]:
     config = load_config()
     app = create_app(config.api)
     async with AsyncClient(
-        transport=ASGITransport(app),
-        base_url="http://test.literally.io"
+        transport=ASGITransport(app), base_url="http://test.literally.io"
     ) as client:
         yield client
