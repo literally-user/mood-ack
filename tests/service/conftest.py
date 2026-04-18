@@ -35,7 +35,7 @@ async def test_config() -> Config:
 async def test_session(test_config: Config) -> AsyncGenerator[AsyncSession]:
     engine = create_async_engine(test_config.persistence.url)
     async with AsyncSession(engine) as session:
-        session.commit = AsyncMock()
+        session.commit = AsyncMock() # type: ignore 
         yield session
         await session.rollback()
 

@@ -3,9 +3,7 @@ from uuid import uuid4
 
 from prodik.application.errors import (
     InvalidCredentialsError,
-    LocalAuthorizationNotFoundError,
     UserDeactivatedError,
-    UserNotFoundError,
 )
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
