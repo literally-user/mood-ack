@@ -34,10 +34,11 @@ async def test_config() -> Config:
 @pytest.fixture
 async def test_session(test_config: Config) -> AsyncGenerator[AsyncSession]:
     engine = create_async_engine(test_config.persistence.url)
-    async with AsyncSession(engine) as session:
-        session.commit = AsyncMock() # type: ignore 
-        yield session
-        await session.rollback()
+    async with engine.begin() as conn:
+        async with AsyncSession(conn) as session:
+            session.commit = AsyncMock() # type: ignore 
+            yield session
+            await session.rollback()
 
 @pytest.fixture()
 async def test_container(test_session: AsyncSession, test_config: Config) -> AsyncGenerator[AsyncContainer]:
