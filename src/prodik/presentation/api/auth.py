@@ -13,7 +13,7 @@ from prodik.presentation.api.schemas.auth import (
 router = APIRouter(prefix="/auth", tags=["authorization"], route_class=DishkaRoute)
 
 
-@router.post("/register")
+@router.post("/register", status_code=201)
 async def register(
     request: RegisterRequest, interactor: FromDishka[RegisterInteractor]
 ) -> AuthResponse:

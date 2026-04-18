@@ -64,7 +64,7 @@ class Username(ValueObject[str]):
                 metadata={"field": "username", "value": value},
             )
 
-        super().__init__(value)
+        super().__init__(value.lower())
 
 
 class FirstName(ValueObject[str]):

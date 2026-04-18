@@ -12,13 +12,16 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT
 }
 
-
 async def application_error_handler(
     _request: Request, exception: ApplicationError
 ) -> JSONResponse:
-    status_code = EXCEPTION_HANDLERS.get(
-        type(exception), status.HTTP_500_INTERNAL_SERVER_ERROR
-    )
+    status_code = None
+    exceptions = EXCEPTION_HANDLERS.keys()
+    for i in type(exception).mro():
+        if i in exceptions:
+            status_code = EXCEPTION_HANDLERS[i]
+    if status_code is None:
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
     response_body: dict[str, Any] = {
         "detail": exception.detail,
