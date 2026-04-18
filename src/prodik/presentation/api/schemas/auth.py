@@ -20,7 +20,7 @@ class RegisterRequest(BaseModel):
     first_name: Annotated[str, Field(description="First name")]
     last_name: Annotated[str, Field(description="Last name")]
     email: Annotated[str, Field(description="Unique email")]
-    password: Annotated[str, Field(description="Password")]
+    password: Annotated[SecretStr, Field(description="Password")]
     age: Annotated[int, Field(description="Age")]
 
 

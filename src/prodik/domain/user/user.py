@@ -147,46 +147,46 @@ class User(Entity[UserId]):
         )
 
     def change_username(self, username: str) -> None:
-        self._username = Username(username)
+        self.username = Username(username)
         self.touch()
 
     def change_first_name(self, first_name: str) -> None:
-        self._first_name = FirstName(first_name)
+        self.first_name = FirstName(first_name)
         self.touch()
 
     def change_last_name(self, last_name: str) -> None:
-        self._last_name = LastName(last_name)
+        self.last_name = LastName(last_name)
         self.touch()
 
     def change_email(self, email: str) -> None:
-        self._email = Email(email)
+        self.email = Email(email)
         self.touch()
 
     def change_age(self, age: int) -> None:
-        self._age = Age(age)
+        self.age = Age(age)
         self.touch()
 
     def set_user_role(self) -> None:
-        self._role = UserRole.USER
+        self.role = UserRole.USER
         self.touch()
 
     def set_moderator_role(self) -> None:
-        self._role = UserRole.MODERATOR
+        self.role = UserRole.MODERATOR
         self.touch()
 
     def activate(self) -> None:
-        self._status = UserStatus.ACTIVE
+        self.status = UserStatus.ACTIVE
         self.touch()
 
     def deactivate(self) -> None:
-        self._status = UserStatus.DEACTIVATED
+        self.status = UserStatus.DEACTIVATED
         self.touch()
 
     def is_deactivated(self) -> bool:
-        return self._status == UserStatus.DEACTIVATED
+        return self.status == UserStatus.DEACTIVATED
 
     def can_manage_users(self) -> bool:
-        return self._role == UserRole.MODERATOR
+        return self.role == UserRole.MODERATOR
 
     def can_manage_tasks(self) -> bool:
-        return self._role == UserRole.MODERATOR
+        return self.role == UserRole.MODERATOR

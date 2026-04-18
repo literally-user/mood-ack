@@ -3,10 +3,13 @@ from unittest.mock import AsyncMock
 import os
 
 import pytest
+from faker import Faker
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from dishka import Provider, provide, AsyncContainer, Scope, make_async_container
+
+from tests.service.factories import create_user_info, TestUserInformation
 
 from prodik.bootstrap.api import create_app
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
@@ -58,6 +61,11 @@ async def test_container(test_session: AsyncSession, test_config: Config) -> Asy
 
     yield container
     await container.close()
+
+@pytest.fixture
+async def test_user_info(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
+    return await create_user_info(faker, test_container)
+
 
 @pytest.fixture
 async def test_client(test_config: Config, test_container: AsyncContainer) -> AsyncGenerator[AsyncClient]:

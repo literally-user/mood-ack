@@ -58,18 +58,18 @@ class UserSession(Entity[UserSessionId]):
         )
 
     def is_revoked(self) -> bool:
-        return self._status == UserSessionStatus.REVOKED
+        return self.status == UserSessionStatus.REVOKED
 
     def enable(self) -> None:
-        self._status = UserSessionStatus.ACTIVE
+        self.status = UserSessionStatus.ACTIVE
         self.touch()
 
     def update_refresh_token(self, refresh_token: str) -> None:
-        self._refresh_token = refresh_token
+        self.refresh_token = refresh_token
         self.touch()
 
     def revoke(self) -> None:
-        self._status = UserSessionStatus.REVOKED
+        self.status = UserSessionStatus.REVOKED
         self.touch()
 
 

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from argon2 import PasswordHasher as Argon2Hasher
+from argon2.exceptions import VerifyMismatchError
 
 from prodik.application.interfaces.password_hasher import PasswordHasher
 
@@ -13,4 +14,7 @@ class PasswordHasherImpl(PasswordHasher):
         return self._hasher.hash(password)
 
     def verify(self, hashed_password: str, password: str) -> bool:
-        return self._hasher.verify(hashed_password, password)
+        try:
+            return self._hasher.verify(hashed_password, password)
+        except VerifyMismatchError:
+            return False

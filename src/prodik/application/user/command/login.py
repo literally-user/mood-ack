@@ -55,7 +55,7 @@ class LoginInteractor:
             user_ip = self.idp.get_current_ip()
             user = await self.user_repository.get_by_email(Email(request.email))
             if user is None:
-                raise UserNotFoundError("Invalid email or password")
+                raise InvalidCredentialsError("Invalid email or password")
 
             if user.is_deactivated():
                 raise UserDeactivatedError("User deactivated")
@@ -64,7 +64,7 @@ class LoginInteractor:
                 user.id
             )
             if authorization is None:
-                raise LocalAuthorizationNotFoundError("Local authorization not found")
+                raise InvalidCredentialsError("Invalid email or password")
 
             if not self.password_hasher.verify(
                 authorization.password, request.password

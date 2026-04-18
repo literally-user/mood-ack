@@ -3,12 +3,14 @@ from typing import Any, Final
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from prodik.application.errors import ApplicationError
+from prodik.application.errors import ApplicationError, InvalidCredentialsError, UserDeactivatedError
 from prodik.domain.user.errors import DomainUserValidationError
 from prodik.presentation.api.auth import router as auth_router
 from prodik.presentation.api.root import router as root_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
+    UserDeactivatedError: status.HTTP_403_FORBIDDEN,
+    InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT
 }
 
