@@ -166,11 +166,11 @@ class User(Entity[UserId]):
         self.age = Age(age)
         self.touch()
 
-    def set_user_role(self) -> None:
+    def demote(self) -> None:
         self.role = UserRole.USER
         self.touch()
 
-    def set_moderator_role(self) -> None:
+    def promote(self) -> None:
         self.role = UserRole.MODERATOR
         self.touch()
 

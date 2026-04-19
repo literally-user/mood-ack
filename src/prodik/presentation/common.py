@@ -6,7 +6,9 @@ from fastapi.responses import JSONResponse
 from prodik.application.errors import (
     ApplicationError,
     InvalidCredentialsError,
+    NotEnoughRightsError,
     UserDeactivatedError,
+    UserNotFoundError,
     UserSessionRevokedError,
 )
 from prodik.domain.user.errors import DomainUserValidationError
@@ -15,7 +17,9 @@ from prodik.presentation.api.root import router as root_router
 from prodik.presentation.api.user import router as user_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
+    UserNotFoundError: status.HTTP_404_NOT_FOUND,
     UserDeactivatedError: status.HTTP_403_FORBIDDEN,
+    NotEnoughRightsError: status.HTTP_403_FORBIDDEN,
     UserSessionRevokedError: status.HTTP_403_FORBIDDEN,
     InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT,

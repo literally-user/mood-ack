@@ -6,7 +6,7 @@ class ChangePasswordRequest(BaseModel):
     new_password: str
 
 
-class UpdateCurrentProfileRequest(BaseModel):
+class UpdateProfileRequest(BaseModel):
     email: str | None
     first_name: str | None
     last_name: str | None

@@ -6,11 +6,14 @@ from prodik.application.user.command import (
     ChangePasswordRequestDTO,
     UpdateCurrentProfileInteractor,
     UpdateCurrentProfileRequestDTO,
+    UpdateProfileInteractor,
+    UpdateProfileRequestDTO,
 )
+from prodik.domain.user import UserId
 from prodik.presentation.api.schemas.auth import AuthResponse
 from prodik.presentation.api.schemas.user import (
     ChangePasswordRequest,
-    UpdateCurrentProfileRequest,
+    UpdateProfileRequest,
 )
 
 router = APIRouter(tags=["users"], prefix="/users", route_class=DishkaRoute)
@@ -35,7 +38,7 @@ async def change_password(
 
 @router.put("/me/profile", status_code=status.HTTP_204_NO_CONTENT)
 async def update_current_profile(
-    request: UpdateCurrentProfileRequest,
+    request: UpdateProfileRequest,
     interactor: FromDishka[UpdateCurrentProfileInteractor],
 ) -> None:
     await interactor.execute(
@@ -46,4 +49,22 @@ async def update_current_profile(
             age=request.age,
             username=request.username,
         )
+    )
+
+
+@router.put("/{target_id}/profile", status_code=status.HTTP_204_NO_CONTENT)
+async def update_profile(
+    target_id: UserId,
+    request: UpdateProfileRequest,
+    interactor: FromDishka[UpdateProfileInteractor],
+) -> None:
+    await interactor.execute(
+        UpdateProfileRequestDTO(
+            email=request.email,
+            first_name=request.first_name,
+            last_name=request.last_name,
+            age=request.age,
+            username=request.username,
+        ),
+        target_id,
     )
