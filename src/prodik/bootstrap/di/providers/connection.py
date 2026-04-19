@@ -3,7 +3,6 @@ from collections.abc import AsyncIterator
 from aioboto3.session import Session as AiobotoSession
 from aiobotocore.client import AioBaseClient
 from dishka import Provider, Scope, provide
-from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -38,13 +37,6 @@ class ConnectionProvider(Provider):
     ) -> AsyncIterator[AsyncSession]:
         async with session_factory() as session:
             yield session
-
-
-class HTTPXClientProvider(Provider):
-    @provide(scope=Scope.REQUEST)
-    async def client(self) -> AsyncClient:
-        async with AsyncClient() as client:
-            return client
 
 
 class S3Provider(Provider):

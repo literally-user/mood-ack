@@ -12,3 +12,7 @@ secret_key = "admin_password"
 access_key = "admin"
 region = "RU-SPB"
 bucket = "ml"
+
+[keycloak]
+client_id = "api.literally.io"
+client_secret = "846N7PGrwI7HgW3gMLpahyxvOk5EcqjZ"

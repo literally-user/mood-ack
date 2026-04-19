@@ -12,10 +12,11 @@ from dishka import Provider, provide, AsyncContainer, Scope, make_async_containe
 from tests.service.factories import create_user_info, TestUserInformation
 
 from prodik.bootstrap.api import create_app
+from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.bootstrap.di.providers.application import ApplicationProvider
 from prodik.bootstrap.di.providers.connection import S3Provider
-from prodik.infrastructure.config import load_config, Config, PersistenceConfig, APIConfig, ObjectStorageConfig
+from prodik.infrastructure.config import load_config, Config, PersistenceConfig, APIConfig, ObjectStorageConfig, KeyCloakConfig
 from prodik.infrastructure.db import start_mapper
 from prodik.bootstrap.cli import run_migrations
 
@@ -43,19 +44,15 @@ async def test_session(test_config: Config) -> AsyncGenerator[AsyncSession]:
 @pytest.fixture()
 async def test_container(
     test_session: AsyncSession,
-    test_client: AsyncClient,
     test_config: Config
 ) -> AsyncGenerator[AsyncContainer]:
     class TestConnectionProvider(Provider):
-        @provide(scope=Scope.REQUEST)
-        async def client(self) -> AsyncGenerator[AsyncClient]:
-            yield test_client
-
         @provide(scope=Scope.REQUEST)
         async def session(self) -> AsyncGenerator[AsyncSession]:
             yield test_session
 
     container = make_async_container(
+        HTTPXClientProvider(),
         TestConnectionProvider(),
         InfrastructureProvider(),
         ApplicationProvider(),
@@ -64,6 +61,7 @@ async def test_container(
         context={
             ObjectStorageConfig: test_config.object_storage,
             PersistenceConfig: test_config.persistence,
+            KeyCloakConfig: test_config.keycloak,
             APIConfig: test_config.api,
         }
     )
