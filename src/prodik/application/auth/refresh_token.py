@@ -45,7 +45,7 @@ class RefreshTokenInteractor:
 
             user = await self.user_repository.get_by_uuid(user_session.user_id)
             if user is None:
-                raise UserNotFoundError("User not found")
+                raise InvalidCredentialsError("Invalid token format")
 
             access_token = self.access_token_manager.generate(
                 user, self.config.expires_in

@@ -55,7 +55,7 @@ user_session_table = Table(
     "user_session",
     metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, nullable=False),
-    Column("user_id", UUID, ForeignKey("user_account.id"), nullable=False),
+    Column("user_id", UUID, ForeignKey("user_account.id", ondelete="CASCADE"), nullable=False),
     Column("ip", IPType(), nullable=False),
     Column("refresh_token", String, nullable=False),
     Column("status", Enum(UserSessionStatus), nullable=False),
@@ -68,7 +68,7 @@ local_authorization_table = Table(
     metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, nullable=False),
     Column(
-        "user_id", UUID(as_uuid=True), ForeignKey("user_account.id"), nullable=False
+        "user_id", UUID(as_uuid=True), ForeignKey("user_account.id", ondelete="CASCADE"), nullable=False
     ),
     Column("password", String, nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False),
@@ -89,7 +89,7 @@ task_record_table = Table(
     metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, nullable=False),
     Column(
-        "owner_id", UUID(as_uuid=True), ForeignKey("user_account.id"), nullable=False
+        "owner_id", UUID(as_uuid=True), ForeignKey("user_account.id", ondelete="CASCADE"), nullable=False
     ),
     Column("state", Enum(TaskState), nullable=False),
     Column("input_type", Enum(InputType), nullable=False),
