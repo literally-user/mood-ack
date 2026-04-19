@@ -53,7 +53,7 @@ async def create_user_info(faker: Faker, test_container: AsyncContainer) -> Test
     user_session = UserSession.new(
         id=UserSessionId(uuid4()),
         user=user,
-        ip=faker.ipv4(),
+        ip="127.0.0.1",
         refresh_token=refresh_token
     )
     local_authorization = LocalAuthorization.new(

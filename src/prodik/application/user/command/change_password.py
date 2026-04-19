@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 from prodik.application.errors import (
     InvalidCredentialsError,
-    LocalAuthorizationNotFoundError,
-    UserSessionRevokedError,
 )
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.password_hasher import PasswordHasher
@@ -50,7 +48,7 @@ class ChangePasswordInteractor:
         async with self.tx_manager:
             current_user_session = await self.idp.get_current_session()
             if current_user_session.is_revoked():
-                raise UserSessionRevokedError("Session was revoked")
+                raise InvalidCredentialsError("Invalid authorization header format")
             current_user = await self.idp.get_current_user()
 
             current_user_sessions = (
@@ -62,7 +60,7 @@ class ChangePasswordInteractor:
                 )
             )
             if local_authorization is None:
-                raise LocalAuthorizationNotFoundError("Local authorization not found")
+                raise InvalidCredentialsError("Invalid authorization header format")
 
             if not self.password_hasher.verify(
                 local_authorization.password, request.old_password

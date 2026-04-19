@@ -12,6 +12,7 @@ from prodik.application.errors import (
 from prodik.domain.user.errors import DomainUserValidationError
 from prodik.presentation.api.auth import router as auth_router
 from prodik.presentation.api.root import router as root_router
+from prodik.presentation.api.user import router as user_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     UserDeactivatedError: status.HTTP_403_FORBIDDEN,
@@ -45,6 +46,7 @@ async def application_error_handler(
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router)
     app.include_router(auth_router)
+    app.include_router(user_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
