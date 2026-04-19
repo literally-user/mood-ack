@@ -12,3 +12,7 @@ secret_key = "admin_password"
 access_key = "admin"
 region = "RU-SPB"
 bucket = "ml"
+
+[keycloak]
+client_id = "your_client_id"
+client_secret = "your_client_secret"

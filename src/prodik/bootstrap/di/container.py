@@ -5,6 +5,7 @@ from prodik.bootstrap.di.providers.application import ApplicationProvider
 from prodik.bootstrap.di.providers.connection import (
     ConnectionProvider,
     S3Provider,
+    HTTPXClientProvider,
 )
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.infrastructure.config import (
@@ -12,6 +13,7 @@ from prodik.infrastructure.config import (
     Config,
     ObjectStorageConfig,
     PersistenceConfig,
+    KeyCloakConfig,
 )
 
 
@@ -22,9 +24,11 @@ def get_async_container(config: Config) -> AsyncContainer:
         InfrastructureProvider(),
         ApplicationProvider(),
         ConnectionProvider(),
+        HTTPXClientProvider(),
         context={
             APIConfig: config.api,
             PersistenceConfig: config.persistence,
             ObjectStorageConfig: config.object_storage,
+            KeyCloakConfig: config.keycloak,
         },
     )

@@ -41,8 +41,16 @@ async def test_session(test_config: Config) -> AsyncGenerator[AsyncSession]:
             await session.rollback()
 
 @pytest.fixture()
-async def test_container(test_session: AsyncSession, test_config: Config) -> AsyncGenerator[AsyncContainer]:
+async def test_container(
+    test_session: AsyncSession,
+    test_client: AsyncClient,
+    test_config: Config
+) -> AsyncGenerator[AsyncContainer]:
     class TestConnectionProvider(Provider):
+        @provide(scope=Scope.REQUEST)
+        async def client(self) -> AsyncGenerator[AsyncClient]:
+            yield test_client
+
         @provide(scope=Scope.REQUEST)
         async def session(self) -> AsyncGenerator[AsyncSession]:
             yield test_session

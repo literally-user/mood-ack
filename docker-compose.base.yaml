@@ -11,12 +11,17 @@ services:
       - prodik-network
 
   keycloak:
-    command: ["start-dev"]
+    command: ["start-dev", "--import-realm"]
     image: keycloak/keycloak:latest
     networks:
       prodik-network:
         aliases:
-          - auth.literally.io
+          - credentials.literally.io
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin_password
+    volumes:
+      - "./deploy/keycloak.json:/opt/keycloak/data/import/realm.json"
     ports:
       - 8080:8080
 

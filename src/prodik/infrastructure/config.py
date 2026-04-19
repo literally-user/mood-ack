@@ -13,6 +13,10 @@ class APIConfig:
     secret: str
     expires_in: int
 
+@dataclass(slots=True, kw_only=True)
+class KeyCloakConfig:
+    client_id: str
+    client_secret: str
 
 @dataclass(slots=True, kw_only=True)
 class PersistenceConfig:
@@ -33,6 +37,7 @@ class Config:
     api: APIConfig
     persistence: PersistenceConfig
     object_storage: ObjectStorageConfig
+    keycloak: KeyCloakConfig
 
 
 def load_config() -> Config:
@@ -59,5 +64,9 @@ def load_config() -> Config:
                 secret_key=config["object_storage"]["secret_key"],
                 region=config["object_storage"]["region"],
                 url=config["object_storage"]["url"],
+            ),
+            keycloak=KeyCloakConfig(
+                client_id=config["keycloak"]["client_id"],
+                client_secret=config["keycloak"]["client_secret"],
             ),
         )

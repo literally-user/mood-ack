@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
-from prodik.application.auth import RefreshTokenInteractor
+from prodik.application.auth import RefreshTokenInteractor, OAuthLoginInteractor
 from prodik.application.user.command import (
     LoginInteractor,
     LoginRequestDTO,
@@ -13,6 +13,7 @@ from prodik.presentation.api.schemas.auth import (
     LoginRequest,
     RefreshTokenRequest,
     RegisterRequest,
+    OAuthRequest,
 )
 
 router = APIRouter(prefix="/auth", tags=["authorization"], route_class=DishkaRoute)
@@ -63,6 +64,19 @@ async def refresh(
     interactor: FromDishka[RefreshTokenInteractor],
 ) -> AuthResponse:
     result = await interactor.execute(request.refresh_token)
+    return AuthResponse(
+        access_token=result.access_token,
+        refresh_token=result.refresh_token,
+        expires_in=result.expires_in,
+    )
+
+
+@router.post("/callback/sso", status_code=200)
+async def callback_sso(
+    request: OAuthRequest,
+    interactor: FromDishka[OAuthLoginInteractor]
+) -> AuthResponse:
+    result = await interactor.execute(request.code, request.state)
     return AuthResponse(
         access_token=result.access_token,
         refresh_token=result.refresh_token,

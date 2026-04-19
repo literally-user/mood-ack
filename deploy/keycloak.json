@@ -1,0 +1,33 @@
+{
+  "realm": "mood-ack-realm",
+  "enabled": true,
+
+  "clients": [
+    {
+      "clientId": "api.literally.io",
+      "name": "My Application Client",
+      "enabled": true,
+
+      "protocol": "openid-connect",
+
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+
+      "redirectUris": [
+        "http://api.literally.io:80/*"
+      ],
+
+      "webOrigins": [
+        "http://api.literally.io:80"
+      ],
+
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+
+      "attributes": {
+        "access.token.lifespan": "300"
+      }
+    }
+  ]
+}

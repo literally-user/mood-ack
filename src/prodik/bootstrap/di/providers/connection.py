@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 
+from httpx import AsyncClient
 from aioboto3.session import Session as AiobotoSession
 from aiobotocore.client import AioBaseClient
 from dishka import Provider, Scope, provide
@@ -38,6 +39,11 @@ class ConnectionProvider(Provider):
         async with session_factory() as session:
             yield session
 
+class HTTPXClientProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    async def client(self) -> AsyncClient:
+        async with AsyncClient() as client:
+            return client
 
 class S3Provider(Provider):
     @provide(scope=Scope.APP)
