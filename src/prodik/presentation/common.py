@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from prodik.application.errors import (
     ApplicationError,
     InvalidCredentialsError,
+    ModeratorCannotBeDeactivatedError,
     NotEnoughRightsError,
     UserDeactivatedError,
     UserNotFoundError,
@@ -22,6 +23,7 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     NotEnoughRightsError: status.HTTP_403_FORBIDDEN,
     UserSessionRevokedError: status.HTTP_403_FORBIDDEN,
     InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
+    ModeratorCannotBeDeactivatedError: status.HTTP_409_CONFLICT,
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT,
 }
 

@@ -9,6 +9,10 @@ from prodik.application.user.command import (
     UpdateProfileInteractor,
     UpdateProfileRequestDTO,
 )
+from prodik.application.user.moderation import (
+    ActivateUserInteractor,
+    DeactivateUserInteractor,
+)
 from prodik.domain.user import UserId
 from prodik.presentation.api.schemas.auth import AuthResponse
 from prodik.presentation.api.schemas.user import (
@@ -68,3 +72,17 @@ async def update_profile(
         ),
         target_id,
     )
+
+
+@router.delete("/{target_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def deactivate_user(
+    target_id: UserId, interactor: FromDishka[DeactivateUserInteractor]
+) -> None:
+    await interactor.execute(target_id)
+
+
+@router.post("/{target_id}/activate", status_code=status.HTTP_204_NO_CONTENT)
+async def activate_user(
+    target_id: UserId, interactor: FromDishka[ActivateUserInteractor]
+) -> None:
+    await interactor.execute(target_id)
