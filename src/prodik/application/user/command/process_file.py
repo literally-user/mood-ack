@@ -12,7 +12,7 @@ from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.task import FileId, FileInput, FileInputId, Task, TaskId
-from prodik.infrastructure.registries import FileProcessingRegistry
+from prodik.infrastructure.file import FileProcessingRegistry
 
 
 @dataclass

@@ -2,13 +2,13 @@ from dishka import Provider, Scope, WithParents, provide, provide_all
 from httpx import AsyncClient
 
 from prodik.infrastructure.config import KeyCloakConfig
+from prodik.infrastructure.file import FileProcessingRegistry
 from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
 from prodik.infrastructure.identity_provider import IdentityProviderImpl
 from prodik.infrastructure.ml import PredictingModelImpl
 from prodik.infrastructure.oauth.keycloak import KeycloakOAuthClient
 from prodik.infrastructure.oauth.registry import OAuthClientRegistry
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
-from prodik.infrastructure.registries import FileProcessingRegistry
 from prodik.infrastructure.repositories import (
     LocalAuthorizationRepositoryImpl,
     OAuthAuthorizationRepositoryImpl,
