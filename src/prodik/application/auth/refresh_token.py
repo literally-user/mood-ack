@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from prodik.application.errors import (
     InvalidCredentialsError,
-    UserNotFoundError,
     UserSessionRevokedError,
 )
 from prodik.application.interfaces.repositories import (

@@ -11,8 +11,8 @@ from prodik.application.user.command import (
 from prodik.presentation.api.schemas.auth import (
     AuthResponse,
     LoginRequest,
-    RegisterRequest,
     RefreshTokenRequest,
+    RegisterRequest,
 )
 
 router = APIRouter(prefix="/auth", tags=["authorization"], route_class=DishkaRoute)
@@ -55,6 +55,7 @@ async def login(
         refresh_token=result.refresh_token,
         expires_in=result.expires_in,
     )
+
 
 @router.post("/refresh", status_code=200)
 async def refresh(
