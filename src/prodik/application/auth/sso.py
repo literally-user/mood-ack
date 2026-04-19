@@ -21,7 +21,7 @@ from prodik.application.interfaces.token_manager import (
 from prodik.domain.credentials import IP, UserSession, UserSessionId
 from prodik.domain.user import Email
 from prodik.infrastructure.config import APIConfig
-from prodik.infrastructure.registries import OAuthClientRegistry
+from prodik.infrastructure.oauth import OAuthClientRegistry
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)

@@ -27,6 +27,7 @@ class RegisterRequest(BaseModel):
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
+
 class OAuthRequest(BaseModel):
     code: str
     state: str

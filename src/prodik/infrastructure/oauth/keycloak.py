@@ -5,6 +5,7 @@ from httpx import AsyncClient
 from prodik.application.interfaces.auth import OAuthClient, OAuthClientResponse
 from prodik.infrastructure.config import KeyCloakConfig
 
+
 @dataclass
 class KeycloakOAuthClient(OAuthClient):
     config: KeyCloakConfig
@@ -27,8 +28,8 @@ class KeycloakOAuthClient(OAuthClient):
         content = response.json()
 
         return OAuthClientResponse(
-            access_token=content['access_token'],
-            refresh_token=content['refresh_token'],
-            expires_in=content['expires_in'],
-            token_id=content['token_id'],
+            access_token=content["access_token"],
+            refresh_token=content["refresh_token"],
+            expires_in=content["expires_in"],
+            token_id=content["token_id"],
         )

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Protocol
 
+
 @dataclass
 class OAuthClientResponse:
     access_token: str

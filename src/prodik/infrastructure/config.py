@@ -13,10 +13,12 @@ class APIConfig:
     secret: str
     expires_in: int
 
+
 @dataclass(slots=True, kw_only=True)
 class KeyCloakConfig:
     client_id: str
     client_secret: str
+
 
 @dataclass(slots=True, kw_only=True)
 class PersistenceConfig:

@@ -32,7 +32,7 @@ class RefreshTokenManager(Protocol):
 
 
 class StateTokenManager(Protocol):
-    def generate(self, data: StateData) -> str: ... # Only for tests
+    def generate(self, data: StateData) -> str: ...  # Only for tests
     def decode(self, token: str) -> StateData: ...
 
 

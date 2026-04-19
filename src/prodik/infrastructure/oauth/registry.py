@@ -1,5 +1,6 @@
 from prodik.application.interfaces.auth import OAuthClient
 
+
 class OAuthClientRegistry:
     _registry: dict[str, OAuthClient]
 

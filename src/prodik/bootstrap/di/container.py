@@ -4,16 +4,16 @@ from dishka.integrations.fastapi import FastapiProvider
 from prodik.bootstrap.di.providers.application import ApplicationProvider
 from prodik.bootstrap.di.providers.connection import (
     ConnectionProvider,
-    S3Provider,
     HTTPXClientProvider,
+    S3Provider,
 )
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.infrastructure.config import (
     APIConfig,
     Config,
+    KeyCloakConfig,
     ObjectStorageConfig,
     PersistenceConfig,
-    KeyCloakConfig,
 )
 
 

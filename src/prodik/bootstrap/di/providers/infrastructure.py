@@ -1,9 +1,12 @@
-from dishka import Provider, Scope, WithParents, provide_all, provide
+from dishka import Provider, Scope, WithParents, provide, provide_all
 from httpx import AsyncClient
 
+from prodik.infrastructure.config import KeyCloakConfig
 from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
 from prodik.infrastructure.identity_provider import IdentityProviderImpl
 from prodik.infrastructure.ml import PredictingModelImpl
+from prodik.infrastructure.oauth.keycloak import KeycloakOAuthClient
+from prodik.infrastructure.oauth.registry import OAuthClientRegistry
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
 from prodik.infrastructure.registries import FileProcessingRegistry
 from prodik.infrastructure.repositories import (
@@ -19,10 +22,8 @@ from prodik.infrastructure.token_manager import (
     RefreshTokenManagerImpl,
     StateTokenManagerImpl,
 )
-from prodik.infrastructure.oauth.registry import OAuthClientRegistry
-from prodik.infrastructure.oauth.keycloak import KeycloakOAuthClient
 from prodik.infrastructure.transaction_manager import TransactionManagerImpl
-from prodik.infrastructure.config import KeyCloakConfig
+
 
 class InfrastructureProvider(Provider):
     provides = provide_all(
@@ -45,7 +46,9 @@ class InfrastructureProvider(Provider):
     )
 
     @provide(scope=Scope.REQUEST)
-    def oauth_registry(self, transport: AsyncClient, keycloak_config: KeyCloakConfig) -> OAuthClientRegistry:
+    def oauth_registry(
+        self, transport: AsyncClient, keycloak_config: KeyCloakConfig
+    ) -> OAuthClientRegistry:
         registry = OAuthClientRegistry()
 
         keycloak_client = KeycloakOAuthClient(keycloak_config, transport)
