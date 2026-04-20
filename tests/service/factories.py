@@ -1,10 +1,12 @@
+from string import ascii_letters
 from dataclasses import dataclass
 from uuid import uuid4
 import random
 
-import pytest
 from faker import Faker
 from dishka import AsyncContainer
+from pydantic import BaseModel, EmailStr
+from polyfactory.factories.pydantic_factory import ModelFactory
 
 from prodik.domain.user import User, UserId
 from prodik.domain.credentials import UserSession, LocalAuthorization, UserSessionId, LocalAuthorizationId
@@ -21,6 +23,39 @@ class TestUserInformation:
 
     password: str
     access_token: str
+
+class RegisterRequest(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    password: str
+    email: EmailStr
+    age: int
+
+class UpdateProfileRequest(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    email: str
+    age: int
+
+class UpdateProfileRequestFactory(ModelFactory[UpdateProfileRequest]):
+    __model__ = UpdateProfileRequest
+
+    @classmethod
+    def age(cls) -> int:
+        return random.randint(18, 98)
+
+    @classmethod
+    def email(cls) -> str:
+        return gen_string(5, 10) + "@example.com"
+
+class RegisterRequestFactory(ModelFactory[RegisterRequest]):
+    __model__ = RegisterRequest
+
+    @classmethod
+    def age(cls) -> int:
+        return random.randint(18, 98)
 
 async def create_user_info(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
     async with test_container() as container:
@@ -73,3 +108,6 @@ async def create_user_info(faker: Faker, test_container: AsyncContainer) -> Test
         password=password,
         access_token=access_token,
     )
+
+def gen_string(a: int, b: int) -> str:
+    return ''.join(random.choice(list(ascii_letters)) for _ in range(random.randint(a, b)))
