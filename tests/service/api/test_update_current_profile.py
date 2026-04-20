@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import pytest
 from faker import Faker
 from httpx import AsyncClient
@@ -28,7 +30,7 @@ async def test_update_current_profile_ok(
     age: int,
 
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -40,11 +42,11 @@ async def test_update_current_profile_ok(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 204
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -63,7 +65,7 @@ async def test_update_current_profile_email_invalid_format(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
 
     response = await test_client.put(
@@ -76,11 +78,11 @@ async def test_update_current_profile_email_invalid_format(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -106,7 +108,7 @@ async def test_update_current_profile_username_invalid_format(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -118,11 +120,11 @@ async def test_update_current_profile_username_invalid_format(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -149,7 +151,7 @@ async def test_update_current_profile_username_too_short(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -161,11 +163,11 @@ async def test_update_current_profile_username_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -191,7 +193,7 @@ async def test_update_current_profile_username_too_long(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -203,11 +205,11 @@ async def test_update_current_profile_username_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -232,7 +234,7 @@ async def test_update_current_profile_first_name_too_short(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -244,11 +246,11 @@ async def test_update_current_profile_first_name_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -274,7 +276,7 @@ async def test_update_current_profile_first_name_too_long(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -286,11 +288,11 @@ async def test_update_current_profile_first_name_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -315,7 +317,7 @@ async def test_update_current_profile_last_name_too_short(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -327,11 +329,11 @@ async def test_update_current_profile_last_name_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -357,7 +359,7 @@ async def test_update_current_profile_last_name_too_long(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -369,11 +371,11 @@ async def test_update_current_profile_last_name_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -399,7 +401,7 @@ async def test_update_current_profile_age_too_small(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -411,11 +413,11 @@ async def test_update_current_profile_age_too_small(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -441,7 +443,7 @@ async def test_update_current_profile_age_too_big(
 
     faker: Faker,
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.put(
         "/users/me/profile",
@@ -453,11 +455,11 @@ async def test_update_current_profile_age_too_big(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {test_user_info.access_token}"
+            "Authorization": f"Bearer {test_user.access_token}"
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(

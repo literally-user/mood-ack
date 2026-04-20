@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import random
 
 import pytest
@@ -41,7 +42,7 @@ async def test_register_ok(
         }
     )
 
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
     assert response.json() == IsPartialDict(
         access_token=IsStr(),
         refresh_token=IsStr(),
@@ -79,7 +80,7 @@ async def test_register_username_too_short(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -119,7 +120,7 @@ async def test_register_username_too_long(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -156,7 +157,7 @@ async def test_register_first_name_too_short(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -195,7 +196,7 @@ async def test_register_first_name_too_long(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -231,7 +232,7 @@ async def test_register_last_name_too_short(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -270,7 +271,7 @@ async def test_register_last_name_too_long(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -308,7 +309,7 @@ async def test_register_age_too_small(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(
@@ -347,7 +348,7 @@ async def test_register_age_too_big(
         }
     )
 
-    assert response.status_code == 422
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
     assert response.json() == IsPartialDict(
         detail=exception_text,
         meta=IsPartialDict(

@@ -78,12 +78,19 @@ async def user_repository(test_container: AsyncContainer) -> UserRepository:
 @pytest.fixture
 async def user_session_repository(test_container: AsyncContainer) -> UserSessionRepository:
     async with test_container() as container:
-        return cast(UserSessionRepository, await container.get(UserRepository))
+        return cast(UserSessionRepository, await container.get(UserSessionRepository))
 
 @pytest.fixture
-async def test_user_info(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
+async def test_user(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
     return await create_user_info(faker, test_container)
 
+@pytest.fixture
+async def test_moderator(faker: Faker, test_container: AsyncContainer, user_repository: UserRepository) -> TestUserInformation:
+    moderator_info = await create_user_info(faker, test_container)
+    moderator_info.user.promote()
+    await user_repository.update(moderator_info.user)
+
+    return moderator_info
 
 @pytest.fixture
 async def test_client(test_config: Config, test_container: AsyncContainer) -> AsyncGenerator[AsyncClient]:

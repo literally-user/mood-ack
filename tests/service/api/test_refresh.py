@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import pytest
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
@@ -14,16 +16,16 @@ from prodik.domain.user import User
 @pytest.mark.asyncio
 async def test_refresh_token_ok(
     test_client: AsyncClient,
-    test_user_info: TestUserInformation
+    test_user: TestUserInformation
 ) -> None:
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user_info.user_session.refresh_token
+            "refresh_token": test_user.user_session.refresh_token
         }
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == IsPartialDict(
         access_token=IsStr(),
         refresh_token=IsStr(),
@@ -42,7 +44,7 @@ async def test_refresh_token_session_not_found(
         }
     )
 
-    assert response.status_code == 401
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == IsPartialDict(
         detail="Invalid token format"
     )
@@ -50,21 +52,21 @@ async def test_refresh_token_session_not_found(
 @pytest.mark.asyncio
 async def test_refresh_token_session_revoked(
     test_client: AsyncClient,
-    test_user_info: TestUserInformation,
+    test_user: TestUserInformation,
     user_session_repository: UserSessionRepository,
 ) -> None:
 
-    test_user_info.user_session.revoke()
-    await user_session_repository.update(test_user_info.user_session)
+    test_user.user_session.revoke()
+    await user_session_repository.update(test_user.user_session)
 
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user_info.user_session.refresh_token
+            "refresh_token": test_user.user_session.refresh_token
         }
     )
 
-    assert response.status_code == 403
+    assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() == IsPartialDict(
         detail="Session was revoked"
     )
@@ -73,23 +75,23 @@ async def test_refresh_token_session_revoked(
 async def test_refresh_token_user_not_found(
     test_client: AsyncClient,
     test_session: AsyncSession,
-    test_user_info: TestUserInformation,
+    test_user: TestUserInformation,
 ) -> None:
     await test_session.execute(
         delete(
             User
         ).where(
-            User.id == test_user_info.user.id # type: ignore
+            User.id == test_user.user.id # type: ignore
         )
     )
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user_info.user_session.refresh_token
+            "refresh_token": test_user.user_session.refresh_token
         }
     )
 
-    assert response.status_code == 401
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == IsPartialDict(
         detail="Invalid token format"
     )
