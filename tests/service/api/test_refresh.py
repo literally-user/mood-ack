@@ -4,7 +4,6 @@ import pytest
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
 from sqlalchemy.ext.asyncio import AsyncSession
-from dishka import AsyncContainer
 from sqlalchemy import delete
 
 

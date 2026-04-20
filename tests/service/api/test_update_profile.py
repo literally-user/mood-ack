@@ -4,12 +4,11 @@ import pytest
 from faker import Faker
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict
-from dishka import AsyncContainer
 from uuid import uuid4
 
-from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository
+from prodik.application.interfaces.repositories import UserSessionRepository
 
-from tests.service.factories import create_user_info, TestUserInformation
+from tests.service.factories import TestUserInformation
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
