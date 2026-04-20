@@ -50,11 +50,9 @@ async def test_refresh_token_session_not_found(
 @pytest.mark.asyncio
 async def test_refresh_token_session_revoked(
     test_client: AsyncClient,
-    test_container: AsyncContainer,
     test_user_info: TestUserInformation,
+    user_session_repository: UserSessionRepository,
 ) -> None:
-    async with test_container() as container:
-        user_session_repository = await container.get(UserSessionRepository)
 
     test_user_info.user_session.revoke()
     await user_session_repository.update(test_user_info.user_session)

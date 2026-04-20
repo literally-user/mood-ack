@@ -15,30 +15,18 @@ async def test_update_deactivate_user_ok(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository,
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
     
     moderator.user.promote()
     await user_repository.update(moderator.user)
 
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.delete(
         f"/users/{target.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -50,34 +38,21 @@ async def test_update_deactivate_user_session_revoked(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_session_repository: UserSessionRepository,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_session_repository = await container.get(UserSessionRepository)
-        user_repository = await container.get(UserRepository)
-    
     moderator.user.promote()
-    await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
     moderator.user_session.revoke()
+    await user_repository.update(moderator.user)
     await user_session_repository.update(moderator.user_session)
-
-    auth_content = auth_response.json()
 
     response = await test_client.delete(
         f"/users/{target.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -95,20 +70,10 @@ async def test_update_deactivate_user_not_enough_rights(
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.delete(
         f"/users/{target.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -123,29 +88,17 @@ async def test_update_deactivate_user_user_not_found(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
 
     moderator.user.promote()
     await user_repository.update(moderator.user)
 
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.delete(
         f"/users/{uuid4()}",
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -159,29 +112,18 @@ async def test_update_deactivate_user_moderator_cannot_be_deactivated(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
 
     moderator.user.promote()
     await user_repository.update(moderator.user)
 
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.delete(
         f"/users/{moderator.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 

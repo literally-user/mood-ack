@@ -7,20 +7,10 @@ from sqlalchemy import delete
 
 from prodik.application.interfaces.repositories import UserSessionRepository
 from tests.service.factories import TestUserInformation
-from prodik.domain.credentials import IP, LocalAuthorization
+from prodik.domain.credentials import LocalAuthorization
 
 @pytest.mark.asyncio
 async def test_change_password_ok(test_client: AsyncClient, test_user_info: TestUserInformation) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/password",
         json={
@@ -28,7 +18,7 @@ async def test_change_password_ok(test_client: AsyncClient, test_user_info: Test
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -42,22 +32,9 @@ async def test_change_password_ok(test_client: AsyncClient, test_user_info: Test
 @pytest.mark.asyncio
 async def test_change_password_session_revoked(
     test_client: AsyncClient,
-    test_container: AsyncContainer,
     test_user_info: TestUserInformation,
+    user_session_repository: UserSessionRepository,
 ) -> None:
-    async with test_container() as container:
-        user_session_repository = await container.get(UserSessionRepository)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     test_user_info.user_session.revoke()
     await user_session_repository.update(test_user_info.user_session)
 
@@ -68,7 +45,7 @@ async def test_change_password_session_revoked(
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -83,14 +60,6 @@ async def test_change_password_local_auth_not_found(
     test_session: AsyncSession,
     test_user_info: TestUserInformation,
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
     await test_session.execute(
         delete(
             LocalAuthorization
@@ -99,8 +68,6 @@ async def test_change_password_local_auth_not_found(
         )
     )
 
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/password",
         json={
@@ -108,7 +75,7 @@ async def test_change_password_local_auth_not_found(
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -122,15 +89,6 @@ async def test_change_password_wrong_old_password(
     test_client: AsyncClient,
     test_user_info: TestUserInformation,
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         "/users/password",
@@ -139,7 +97,7 @@ async def test_change_password_wrong_old_password(
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 

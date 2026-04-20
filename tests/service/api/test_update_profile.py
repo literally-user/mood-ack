@@ -33,25 +33,13 @@ async def test_update_profile_ok(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
     
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -63,7 +51,7 @@ async def test_update_profile_ok(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -91,24 +79,12 @@ async def test_update_profile_user_not_found(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
     
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{uuid4()}/profile",
@@ -120,7 +96,7 @@ async def test_update_profile_user_not_found(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -151,25 +127,13 @@ async def test_update_profile_session_revoked(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_session_repository: UserSessionRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_session_repository = await container.get(UserSessionRepository)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
     moderator.user_session.revoke()
     await user_session_repository.update(moderator.user_session)
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -181,7 +145,7 @@ async def test_update_profile_session_revoked(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -216,16 +180,6 @@ async def test_update_profile_forbidden(
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
         json={
@@ -236,7 +190,7 @@ async def test_update_profile_forbidden(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -261,25 +215,13 @@ async def test_update_profile_email_invalid_format(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -291,7 +233,7 @@ async def test_update_profile_email_invalid_format(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -320,25 +262,13 @@ async def test_update_profile_username_invalid_format(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -350,7 +280,7 @@ async def test_update_profile_username_invalid_format(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -379,25 +309,13 @@ async def test_update_profile_username_too_short(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository,
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -409,7 +327,7 @@ async def test_update_profile_username_too_short(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -438,25 +356,13 @@ async def test_update_profile_username_too_long(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -468,7 +374,7 @@ async def test_update_profile_username_too_long(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -486,39 +392,25 @@ async def test_update_profile_first_name_too_short(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
-    first_name = ""
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
         json={
             "email": faker.email(),
-            "first_name": first_name,
+            "first_name": "",
             "last_name": faker.last_name(),
             "username": faker.user_name(),
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -527,7 +419,7 @@ async def test_update_profile_first_name_too_short(
         detail="First name cannot be shorter than 1 symbols",
         meta=IsPartialDict(
             field="first_name",
-            value=first_name,
+            value="",
         )
     )
 
@@ -547,12 +439,10 @@ async def test_update_profile_first_name_too_long(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
-
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
 
     moderator.user.promote()
     await user_repository.update(moderator.user)
@@ -577,7 +467,7 @@ async def test_update_profile_first_name_too_long(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -595,39 +485,25 @@ async def test_update_profile_last_name_too_short(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository,
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
-    last_name = ""
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
         json={
             "email": faker.email(),
             "first_name": faker.first_name(),
-            "last_name": last_name,
+            "last_name": "",
             "username": faker.user_name(),
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -636,7 +512,7 @@ async def test_update_profile_last_name_too_short(
         detail="Last name cannot be shorter than 1 symbols",
         meta=IsPartialDict(
             field="last_name",
-            value=last_name,
+            value="",
         )
     )
 
@@ -656,25 +532,13 @@ async def test_update_profile_last_name_too_long(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -686,7 +550,7 @@ async def test_update_profile_last_name_too_long(
             "age": faker.random_int(18, 90),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -715,25 +579,13 @@ async def test_update_profile_age_too_small(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository,
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -745,7 +597,7 @@ async def test_update_profile_age_too_small(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 
@@ -774,25 +626,13 @@ async def test_update_profile_age_too_big(
     faker: Faker,
     test_container: AsyncContainer,
     test_client: AsyncClient,
+    user_repository: UserRepository
 ) -> None:
     moderator = await create_user_info(faker, test_container)
     target = await create_user_info(faker, test_container)
 
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-
     moderator.user.promote()
     await user_repository.update(moderator.user)
-
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": moderator.user.email.value,
-            "password": moderator.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         f"/users/{target.user.id}/profile",
@@ -804,7 +644,7 @@ async def test_update_profile_age_too_big(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {moderator.access_token}"
         }
     )
 

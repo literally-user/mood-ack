@@ -30,16 +30,6 @@ async def test_update_current_profile_ok(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -50,7 +40,7 @@ async def test_update_current_profile_ok(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -75,15 +65,6 @@ async def test_update_current_profile_email_invalid_format(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
 
     response = await test_client.put(
         "/users/me/profile",
@@ -95,7 +76,7 @@ async def test_update_current_profile_email_invalid_format(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -127,16 +108,6 @@ async def test_update_current_profile_username_invalid_format(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -147,7 +118,7 @@ async def test_update_current_profile_username_invalid_format(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -180,16 +151,6 @@ async def test_update_current_profile_username_too_short(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -200,7 +161,7 @@ async def test_update_current_profile_username_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -232,16 +193,6 @@ async def test_update_current_profile_username_too_long(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -252,7 +203,7 @@ async def test_update_current_profile_username_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -283,16 +234,6 @@ async def test_update_current_profile_first_name_too_short(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -303,7 +244,7 @@ async def test_update_current_profile_first_name_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -335,16 +276,6 @@ async def test_update_current_profile_first_name_too_long(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -355,7 +286,7 @@ async def test_update_current_profile_first_name_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -386,16 +317,6 @@ async def test_update_current_profile_last_name_too_short(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -406,7 +327,7 @@ async def test_update_current_profile_last_name_too_short(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -438,16 +359,6 @@ async def test_update_current_profile_last_name_too_long(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -458,7 +369,7 @@ async def test_update_current_profile_last_name_too_long(
             "age": random.randint(18, 88),
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -490,16 +401,6 @@ async def test_update_current_profile_age_too_small(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -510,7 +411,7 @@ async def test_update_current_profile_age_too_small(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 
@@ -542,16 +443,6 @@ async def test_update_current_profile_age_too_big(
     test_client: AsyncClient,
     test_user_info: TestUserInformation
 ) -> None:
-    auth_response = await test_client.post(
-        "/auth/login",
-        json={
-            "email": test_user_info.user.email.value,
-            "password": test_user_info.password,
-        }
-    )
-
-    auth_content = auth_response.json()
-
     response = await test_client.put(
         "/users/me/profile",
         json={
@@ -562,7 +453,7 @@ async def test_update_current_profile_age_too_big(
             "age": age,
         },
         headers={
-            "Authorization": f"Bearer {auth_content['access_token']}"
+            "Authorization": f"Bearer {test_user_info.access_token}"
         }
     )
 

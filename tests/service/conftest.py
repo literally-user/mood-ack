@@ -19,6 +19,7 @@ from prodik.bootstrap.di.providers.connection import S3Provider
 from prodik.infrastructure.config import load_config, Config, PersistenceConfig, APIConfig, ObjectStorageConfig, KeyCloakConfig
 from prodik.infrastructure.db import start_mapper
 from prodik.bootstrap.cli import run_migrations
+from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository
 
 @pytest.fixture(scope="session", autouse=True)
 def startup() -> None:
@@ -68,6 +69,16 @@ async def test_container(
 
     yield container
     await container.close()
+
+@pytest.fixture
+async def user_repository(test_container: AsyncContainer) -> UserRepository:
+    async with test_container() as container:
+        return await container.get(UserRepository)
+
+@pytest.fixture
+async def user_session_repository(test_container: AsyncContainer) -> UserSessionRepository:
+    async with test_container() as container:
+        return await container.get(UserSessionRepository)
 
 @pytest.fixture
 async def test_user_info(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:

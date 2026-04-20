@@ -59,10 +59,7 @@ async def test_login_invalid_password(test_client: AsyncClient, test_user_info: 
     )
 
 @pytest.mark.asyncio
-async def test_login_deactivated(test_client: AsyncClient, test_user_info: TestUserInformation, test_container: AsyncContainer) -> None:
-    async with test_container() as container:
-        user_repository = await container.get(UserRepository)
-    
+async def test_login_deactivated(test_client: AsyncClient, test_user_info: TestUserInformation, user_repository: UserRepository) -> None:
     test_user_info.user.deactivate()
     await user_repository.update(test_user_info.user)
 
