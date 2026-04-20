@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, cast
 from unittest.mock import AsyncMock
 import os
 
@@ -73,12 +73,12 @@ async def test_container(
 @pytest.fixture
 async def user_repository(test_container: AsyncContainer) -> UserRepository:
     async with test_container() as container:
-        return await container.get(UserRepository)
+        return cast(UserRepository, await container.get(UserRepository))
 
 @pytest.fixture
 async def user_session_repository(test_container: AsyncContainer) -> UserSessionRepository:
     async with test_container() as container:
-        return await container.get(UserSessionRepository)
+        return cast(UserSessionRepository, await container.get(UserRepository))
 
 @pytest.fixture
 async def test_user_info(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
