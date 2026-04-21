@@ -8,8 +8,8 @@ from uuid import uuid4
 from prodik.application.interfaces.repositories import UserSessionRepository
 
 from tests.service.factories import (
-    TestUserInformation,
     UpdateProfileRequestFactory,
+    UserFactory,
     gen_string,
 )
 
@@ -17,14 +17,15 @@ from tests.service.factories import (
 @pytest.mark.asyncio
 async def test_update_profile_ok(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build()
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -34,13 +35,14 @@ async def test_update_profile_ok(
 @pytest.mark.asyncio
 async def test_update_profile_user_not_found(
     test_client: AsyncClient,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build()
 
     response = await test_client.put(
         f"/users/{uuid4()}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -53,10 +55,11 @@ async def test_update_profile_user_not_found(
 @pytest.mark.asyncio
 async def test_update_profile_session_revoked(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
     user_session_repository: UserSessionRepository,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     test_moderator.user_session.revoke()
     await user_session_repository.update(test_moderator.user_session)
 
@@ -64,7 +67,7 @@ async def test_update_profile_session_revoked(
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -77,14 +80,15 @@ async def test_update_profile_session_revoked(
 @pytest.mark.asyncio
 async def test_update_profile_forbidden(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build()
 
     response = await test_client.put(
         f"/users/{test_moderator.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_user.access_token}"}
     )
 
@@ -97,16 +101,17 @@ async def test_update_profile_forbidden(
 @pytest.mark.asyncio
 async def test_update_profile_email_invalid(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         email="invalid-email@@"
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -115,7 +120,7 @@ async def test_update_profile_email_invalid(
         detail="Email invalid format",
         meta=IsPartialDict(
             field="email",
-            value=request.email,
+            value=request['email'],
         )
     )
 
@@ -123,16 +128,17 @@ async def test_update_profile_email_invalid(
 @pytest.mark.asyncio
 async def test_update_profile_username_invalid(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         username="romagay@"
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -142,16 +148,17 @@ async def test_update_profile_username_invalid(
 @pytest.mark.asyncio
 async def test_update_profile_username_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         username=gen_string(3, 4)
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -161,16 +168,17 @@ async def test_update_profile_username_too_short(
 @pytest.mark.asyncio
 async def test_update_profile_username_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         username=gen_string(31, 31)
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -180,16 +188,17 @@ async def test_update_profile_username_too_long(
 @pytest.mark.asyncio
 async def test_update_profile_first_name_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         first_name=""
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -199,16 +208,17 @@ async def test_update_profile_first_name_too_short(
 @pytest.mark.asyncio
 async def test_update_profile_first_name_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         first_name=gen_string(31, 31)
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -218,16 +228,17 @@ async def test_update_profile_first_name_too_long(
 @pytest.mark.asyncio
 async def test_update_profile_last_name_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         last_name=""
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
@@ -237,52 +248,57 @@ async def test_update_profile_last_name_too_short(
 @pytest.mark.asyncio
 async def test_update_profile_last_name_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         last_name=gen_string(31, 31)
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
+
 @pytest.mark.asyncio
 async def test_update_profile_age_too_small(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         age=17
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
+
 @pytest.mark.asyncio
 async def test_update_profile_age_too_big(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
-    test_moderator: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    test_user = await test_user_factory.create_user_info()
+    test_moderator = await test_user_factory.create_moderator_info()
     request = UpdateProfileRequestFactory.build(
         age=100
     )
 
     response = await test_client.put(
         f"/users/{test_user.user.id}/profile",
-        json=request.model_dump(),
+        json=request,
         headers={"Authorization": f"Bearer {test_moderator.access_token}"}
     )
 

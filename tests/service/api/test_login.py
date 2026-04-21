@@ -6,19 +6,21 @@ from dirty_equals import IsPartialDict, IsStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete
 
-from tests.service.factories import TestUserInformation
+from tests.service.factories import UserFactory
 
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.domain.credentials import LocalAuthorization
 
 
 @pytest.mark.asyncio
-async def test_login_ok(test_client: AsyncClient, test_user: TestUserInformation) -> None:
+async def test_login_ok(test_client: AsyncClient, test_user_factory: UserFactory) -> None:
+    user = await test_user_factory.create_user_info()
+
     response = await test_client.post(
         "/auth/login",
         json={
-            "email": test_user.user.email.value,
-            "password": test_user.password,
+            "email": user.user.email.value,
+            "password": user.password,
         }
     )
 
@@ -30,12 +32,14 @@ async def test_login_ok(test_client: AsyncClient, test_user: TestUserInformation
     )
 
 @pytest.mark.asyncio
-async def test_login_invalid_email(test_client: AsyncClient, test_user: TestUserInformation) -> None:
+async def test_login_invalid_email(test_client: AsyncClient, test_user_factory: UserFactory) -> None:
+    user = await test_user_factory.create_user_info()
+
     response = await test_client.post(
         "/auth/login",
         json={
             "email": "invalidemail@literally.op",
-            "password": test_user.password,
+            "password": user.password,
         }
     )
 
@@ -45,11 +49,12 @@ async def test_login_invalid_email(test_client: AsyncClient, test_user: TestUser
     )
 
 @pytest.mark.asyncio
-async def test_login_invalid_password(test_client: AsyncClient, test_user: TestUserInformation) -> None:
+async def test_login_invalid_password(test_client: AsyncClient, test_user_factory: UserFactory) -> None:
+    user = await test_user_factory.create_user_info()
     response = await test_client.post(
         "/auth/login",
         json={
-            "email": test_user.user.email.value,
+            "email": user.user.email.value,
             "password": "InvalidPassword",
         }
     )
@@ -60,15 +65,16 @@ async def test_login_invalid_password(test_client: AsyncClient, test_user: TestU
     )
 
 @pytest.mark.asyncio
-async def test_login_deactivated(test_client: AsyncClient, test_user: TestUserInformation, user_repository: UserRepository) -> None:
-    test_user.user.deactivate()
-    await user_repository.update(test_user.user)
+async def test_login_deactivated(test_client: AsyncClient, user_repository: UserRepository, test_user_factory: UserFactory) -> None:
+    user = await test_user_factory.create_user_info()
+    user.user.deactivate()
+    await user_repository.update(user.user)
 
     response = await test_client.post(
         "/auth/login",
         json={
-            "email": test_user.user.email.value,
-            "password": test_user.password,
+            "email": user.user.email.value,
+            "password": user.password,
         }
     )
 
@@ -78,20 +84,26 @@ async def test_login_deactivated(test_client: AsyncClient, test_user: TestUserIn
     )
 
 @pytest.mark.asyncio
-async def test_login_local_auth_not_found(test_client: AsyncClient, test_user: TestUserInformation, test_session: AsyncSession) -> None:
+async def test_login_local_auth_not_found(
+    test_client: AsyncClient,
+    test_session: AsyncSession,
+    test_user_factory: UserFactory
+) -> None:
+    user = await test_user_factory.create_user_info()
+
     await test_session.execute(
         delete(
             LocalAuthorization
         ).where(
-            LocalAuthorization.id == test_user.local_authorization.id # type: ignore
+            LocalAuthorization.id == user.local_authorization.id # type: ignore
        )
     )
 
     response = await test_client.post(
         "/auth/login",
         json={
-            "email": test_user.user.email.value,
-            "password": test_user.password,
+            "email": user.user.email.value,
+            "password": user.password,
         }
     )
 

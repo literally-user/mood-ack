@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from dishka import Provider, provide, AsyncContainer, Scope, make_async_container
 
-from tests.service.factories import create_user_info, TestUserInformation
+from tests.service.factories import UserFactory, TestUserInformation
 
 from prodik.bootstrap.api import create_app
 from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
@@ -19,7 +19,9 @@ from prodik.bootstrap.di.providers.connection import S3Provider
 from prodik.infrastructure.config import load_config, Config, PersistenceConfig, APIConfig, ObjectStorageConfig, KeyCloakConfig
 from prodik.infrastructure.db import start_mapper
 from prodik.bootstrap.cli import run_migrations
-from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository
+from prodik.application.interfaces.password_hasher import PasswordHasher
+from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository, LocalAuthorizationRepository
+from prodik.application.interfaces.token_manager import AccessTokenManager, RefreshTokenManager
 
 @pytest.fixture(scope="session", autouse=True)
 def startup() -> None:
@@ -81,16 +83,18 @@ async def user_session_repository(test_container: AsyncContainer) -> UserSession
         return cast(UserSessionRepository, await container.get(UserSessionRepository))
 
 @pytest.fixture
-async def test_user(faker: Faker, test_container: AsyncContainer) -> TestUserInformation:
-    return await create_user_info(faker, test_container)
-
-@pytest.fixture
-async def test_moderator(faker: Faker, test_container: AsyncContainer, user_repository: UserRepository) -> TestUserInformation:
-    moderator_info = await create_user_info(faker, test_container)
-    moderator_info.user.promote()
-    await user_repository.update(moderator_info.user)
-
-    return moderator_info
+async def test_user_factory(faker: Faker, test_container: AsyncContainer):
+    async with test_container() as container:
+        return UserFactory(
+            faker,
+            await container.get(UserRepository),
+            await container.get(RefreshTokenManager),
+            await container.get(AccessTokenManager),
+            await container.get(UserSessionRepository),
+            await container.get(LocalAuthorizationRepository),
+            await container.get(PasswordHasher),
+            await container.get(APIConfig),
+        )
 
 @pytest.fixture
 async def test_client(test_config: Config, test_container: AsyncContainer) -> AsyncGenerator[AsyncClient]:

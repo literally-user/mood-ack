@@ -12,7 +12,7 @@ async def test_register_ok(test_client: AsyncClient) -> None:
     request = RegisterRequestFactory.build()
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.CREATED
@@ -27,7 +27,7 @@ async def test_register_username_too_short(test_client: AsyncClient) -> None:
     request = RegisterRequestFactory.build(username=gen_string(0, 4))
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -35,7 +35,7 @@ async def test_register_username_too_short(test_client: AsyncClient) -> None:
         detail="Username cannot be shorter than 5 symbols",
         meta=IsPartialDict(
             field="username",
-            value=request.username,
+            value=request['username'],
         )
     )
 
@@ -45,7 +45,7 @@ async def test_register_username_too_long(test_client: AsyncClient) -> None:
     request = RegisterRequestFactory.build(username=gen_string(31, 100))
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump(),
+        json=request,
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -53,7 +53,7 @@ async def test_register_username_too_long(test_client: AsyncClient) -> None:
         detail="Username cannot be longer than 30 symbols",
         meta=IsPartialDict(
             field="username",
-            value=request.username,
+            value=request['username'],
         )
     )
 
@@ -65,7 +65,7 @@ async def test_register_first_name_too_short(
     request = RegisterRequestFactory.build(first_name="")
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -73,7 +73,7 @@ async def test_register_first_name_too_short(
         detail="First name cannot be shorter than 1 symbols",
         meta=IsPartialDict(
             field="first_name",
-            value=request.first_name,
+            value=request['first_name'],
         )
     )
 
@@ -84,7 +84,7 @@ async def test_register_first_name_too_long(
     request = RegisterRequestFactory.build(first_name=gen_string(31,100))
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -92,7 +92,7 @@ async def test_register_first_name_too_long(
         detail="First name cannot be longer than 30 symbols",
         meta=IsPartialDict(
             field="first_name",
-            value=request.first_name,
+            value=request['first_name'],
         )
     )
 
@@ -103,7 +103,7 @@ async def test_register_last_name_too_short(
     request = RegisterRequestFactory.build(last_name="")
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -111,7 +111,7 @@ async def test_register_last_name_too_short(
         detail="Last name cannot be shorter than 1 symbols",
         meta=IsPartialDict(
             field="last_name",
-            value=request.last_name,
+            value=request['last_name'],
         )
     )
 
@@ -123,7 +123,7 @@ async def test_register_last_name_too_long(test_client: AsyncClient) -> None:
 
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -131,7 +131,7 @@ async def test_register_last_name_too_long(test_client: AsyncClient) -> None:
         detail="Last name cannot be longer than 30 symbols",
         meta=IsPartialDict(
             field="last_name",
-            value=request.last_name,
+            value=request['last_name'],
         )
     )
 
@@ -141,7 +141,7 @@ async def test_register_age_too_small(test_client: AsyncClient) -> None:
 
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -149,7 +149,7 @@ async def test_register_age_too_small(test_client: AsyncClient) -> None:
         detail="Age cannot be smaller than 18",
         meta=IsPartialDict(
             field="age",
-            value=request.age,
+            value=request['age'],
         )
     )
 
@@ -159,7 +159,7 @@ async def test_register_age_too_big(test_client: AsyncClient) -> None:
 
     response = await test_client.post(
         "/auth/register",
-        json=request.model_dump()
+        json=request
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -167,6 +167,6 @@ async def test_register_age_too_big(test_client: AsyncClient) -> None:
         detail="Age cannot be bigger than 99",
         meta=IsPartialDict(
             field="age",
-            value=request.age,
+            value=request['age'],
         )
     )

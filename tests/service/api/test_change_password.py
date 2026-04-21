@@ -7,19 +7,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete
 
 from prodik.application.interfaces.repositories import UserSessionRepository
-from tests.service.factories import TestUserInformation
+from tests.service.factories import UserFactory
 from prodik.domain.credentials import LocalAuthorization
 
 @pytest.mark.asyncio
-async def test_change_password_ok(test_client: AsyncClient, test_user: TestUserInformation) -> None:
+async def test_change_password_ok(test_client: AsyncClient, test_user_factory: UserFactory) -> None:
+    user = await test_user_factory.create_user_info()
     response = await test_client.put(
         "/users/password",
         json={
-            "old_password": test_user.password,
+            "old_password": user.password,
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {test_user.access_token}"
+            "Authorization": f"Bearer {user.access_token}"
         }
     )
 
@@ -33,20 +34,22 @@ async def test_change_password_ok(test_client: AsyncClient, test_user: TestUserI
 @pytest.mark.asyncio
 async def test_change_password_session_revoked(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
+    test_user_factory: UserFactory,
     user_session_repository: UserSessionRepository,
 ) -> None:
-    test_user.user_session.revoke()
-    await user_session_repository.update(test_user.user_session)
+    user = await test_user_factory.create_user_info()
+
+    user.user_session.revoke()
+    await user_session_repository.update(user.user_session)
 
     response = await test_client.put(
         "/users/password",
         json={
-            "old_password": test_user.password,
+            "old_password": user.password,
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {test_user.access_token}"
+            "Authorization": f"Bearer {user.access_token}"
         }
     )
 
@@ -59,24 +62,26 @@ async def test_change_password_session_revoked(
 async def test_change_password_local_auth_not_found(
     test_client: AsyncClient,
     test_session: AsyncSession,
-    test_user: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
+
     await test_session.execute(
         delete(
             LocalAuthorization
         ).where(
-            LocalAuthorization.id == test_user.local_authorization.id # type: ignore
+            LocalAuthorization.id == user.local_authorization.id # type: ignore
         )
     )
 
     response = await test_client.put(
         "/users/password",
         json={
-            "old_password": test_user.password,
+            "old_password": user.password,
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {test_user.access_token}"
+            "Authorization": f"Bearer {user.access_token}"
         }
     )
 
@@ -88,8 +93,10 @@ async def test_change_password_local_auth_not_found(
 @pytest.mark.asyncio
 async def test_change_password_wrong_old_password(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
+    
     response = await test_client.put(
         "/users/password",
         json={
@@ -97,7 +104,7 @@ async def test_change_password_wrong_old_password(
             "new_password": "NewPassword123"
         },
         headers={
-            "Authorization": f"Bearer {test_user.access_token}"
+            "Authorization": f"Bearer {user.access_token}"
         }
     )
 

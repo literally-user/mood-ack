@@ -3,24 +3,23 @@ from http import HTTPStatus
 import pytest
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete
 
 
-from tests.service.factories import TestUserInformation
+from tests.service.factories import UserFactory, gen_string
 
 from prodik.application.interfaces.repositories import UserSessionRepository
-from prodik.domain.user import User
 
 @pytest.mark.asyncio
 async def test_refresh_token_ok(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
+
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user.user_session.refresh_token
+            "refresh_token": user.user_session.refresh_token
         }
     )
 
@@ -51,17 +50,18 @@ async def test_refresh_token_session_not_found(
 @pytest.mark.asyncio
 async def test_refresh_token_session_revoked(
     test_client: AsyncClient,
-    test_user: TestUserInformation,
+    test_user_factory: UserFactory,
     user_session_repository: UserSessionRepository,
 ) -> None:
+    user = await test_user_factory.create_user_info()
 
-    test_user.user_session.revoke()
-    await user_session_repository.update(test_user.user_session)
+    user.user_session.revoke()
+    await user_session_repository.update(user.user_session)
 
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user.user_session.refresh_token
+            "refresh_token": user.user_session.refresh_token
         }
     )
 
@@ -73,20 +73,11 @@ async def test_refresh_token_session_revoked(
 @pytest.mark.asyncio
 async def test_refresh_token_user_not_found(
     test_client: AsyncClient,
-    test_session: AsyncSession,
-    test_user: TestUserInformation,
 ) -> None:
-    await test_session.execute(
-        delete(
-            User
-        ).where(
-            User.id == test_user.user.id # type: ignore
-        )
-    )
     response = await test_client.post(
         '/auth/refresh',
         json={
-            "refresh_token": test_user.user_session.refresh_token
+            "refresh_token": gen_string(1, 50)
         }
     )
 

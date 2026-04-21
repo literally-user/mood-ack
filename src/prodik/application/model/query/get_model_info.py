@@ -6,7 +6,7 @@ from prodik.application.interfaces.predicting_model import ModelMeta, Predicting
 
 
 @dataclass
-class GetPredictingModelInfo:
+class GetPredictingModelInfoInteractor:
     predicting_model: PredictingModel
     idp: IdentityProvider
 

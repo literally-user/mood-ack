@@ -5,19 +5,20 @@ import pytest
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict
 
-from tests.service.factories import UpdateProfileRequestFactory, gen_string, TestUserInformation
+from tests.service.factories import UpdateProfileRequestFactory, gen_string, UserFactory
 
 @pytest.mark.asyncio
 async def test_update_current_profile_ok(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build()
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.NO_CONTENT
@@ -26,16 +27,17 @@ async def test_update_current_profile_ok(
 @pytest.mark.asyncio
 async def test_update_current_profile_email_invalid(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         email="invalid-email@@"
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -43,23 +45,24 @@ async def test_update_current_profile_email_invalid(
         detail="Email invalid format",
         meta=IsPartialDict(
             field="email",
-            value=request.email,
+            value=request['email'],
         )
     )
 
 @pytest.mark.asyncio
 async def test_update_current_profile_username_invalid(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         username="romagay@"
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -67,7 +70,7 @@ async def test_update_current_profile_username_invalid(
         detail="Username cannot start with number and contain special characters",
         meta=IsPartialDict(
             field="username",
-            value=request.username,
+            value=request['username'],
         )
     )
 
@@ -75,16 +78,17 @@ async def test_update_current_profile_username_invalid(
 @pytest.mark.asyncio
 async def test_update_current_profile_username_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         username=gen_string(3, 4)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -92,7 +96,7 @@ async def test_update_current_profile_username_too_short(
         detail="Username cannot be shorter than 5 symbols",
         meta=IsPartialDict(
             field="username",
-            value=request.username,
+            value=request['username'],
         )
     )
 
@@ -100,16 +104,17 @@ async def test_update_current_profile_username_too_short(
 @pytest.mark.asyncio
 async def test_update_current_profile_username_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         username=gen_string(31, 31)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -117,7 +122,7 @@ async def test_update_current_profile_username_too_long(
         detail="Username cannot be longer than 30 symbols",
         meta=IsPartialDict(
             field="username",
-            value=request.username,
+            value=request['username'],
         )
     )
 
@@ -125,16 +130,17 @@ async def test_update_current_profile_username_too_long(
 @pytest.mark.asyncio
 async def test_update_current_profile_first_name_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         first_name=""
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -143,16 +149,17 @@ async def test_update_current_profile_first_name_too_short(
 @pytest.mark.asyncio
 async def test_update_current_profile_first_name_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         first_name=gen_string(31, 31)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -161,16 +168,17 @@ async def test_update_current_profile_first_name_too_long(
 @pytest.mark.asyncio
 async def test_update_current_profile_last_name_too_short(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         last_name=""
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -179,16 +187,17 @@ async def test_update_current_profile_last_name_too_short(
 @pytest.mark.asyncio
 async def test_update_current_profile_last_name_too_long(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         last_name=gen_string(31, 31)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -197,16 +206,17 @@ async def test_update_current_profile_last_name_too_long(
 @pytest.mark.asyncio
 async def test_update_current_profile_age_too_small(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
-        age=17
+        age=random.randint(0, 17)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -214,23 +224,24 @@ async def test_update_current_profile_age_too_small(
         detail="Age cannot be smaller than 18",
         meta=IsPartialDict(
             field="age",
-            value=request.age,
+            value=request['age'],
         )
     )
 
 @pytest.mark.asyncio
 async def test_update_current_profile_age_too_big(
     test_client: AsyncClient,
-    test_user: TestUserInformation
+    test_user_factory: UserFactory,
 ) -> None:
+    user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
         age=random.randint(99, 130)
     )
 
     response = await test_client.put(
         "/users/me/profile",
-        json=request.model_dump(),
-        headers={"Authorization": f"Bearer {test_user.access_token}"}
+        json=request,
+        headers={"Authorization": f"Bearer {user.access_token}"}
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
@@ -238,6 +249,6 @@ async def test_update_current_profile_age_too_big(
         detail="Age cannot be bigger than 99",
         meta=IsPartialDict(
             field="age",
-            value=request.age,
+            value=request['age'],
         )
     )
