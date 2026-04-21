@@ -13,11 +13,17 @@ from prodik.application.user.moderation import (
     ActivateUserInteractor,
     DeactivateUserInteractor,
 )
+from prodik.application.user.query import (
+    GetAllUsersInteractor,
+    GetCurrentProfileInteractor,
+    GetUserProfileInteractor,
+)
 from prodik.domain.user import UserId
 from prodik.presentation.api.schemas.auth import AuthResponse
 from prodik.presentation.api.schemas.user import (
     ChangePasswordRequest,
     UpdateProfileRequest,
+    UserSchema,
 )
 
 router = APIRouter(tags=["users"], prefix="/users", route_class=DishkaRoute)
@@ -86,3 +92,63 @@ async def activate_user(
     target_id: UserId, interactor: FromDishka[ActivateUserInteractor]
 ) -> None:
     await interactor.execute(target_id)
+
+
+@router.get("/me", status_code=status.HTTP_200_OK)
+async def get_current_profile(
+    interactor: FromDishka[GetCurrentProfileInteractor],
+) -> UserSchema:
+    result = await interactor.execute()
+    return UserSchema(
+        id=result.id,
+        username=result.username.value,
+        first_name=result.first_name.value,
+        last_name=result.last_name.value,
+        email=result.email.value,
+        age=result.age.value,
+        role=result.role,
+        status=result.status,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.get("/{target_id}", status_code=status.HTTP_200_OK)
+async def get_user_profile(
+    target_id: UserId, interactor: FromDishka[GetUserProfileInteractor]
+) -> UserSchema:
+    result = await interactor.execute(target_id)
+    return UserSchema(
+        id=result.id,
+        username=result.username.value,
+        first_name=result.first_name.value,
+        last_name=result.last_name.value,
+        email=result.email.value,
+        age=result.age.value,
+        role=result.role,
+        status=result.status,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.get("/", status_code=status.HTTP_200_OK)
+async def get_all_users(
+    page: int, size: int, interactor: FromDishka[GetAllUsersInteractor]
+) -> list[UserSchema]:
+    result = await interactor.execute(page, size)
+    return [
+        UserSchema(
+            id=x.id,
+            username=x.username.value,
+            first_name=x.first_name.value,
+            last_name=x.last_name.value,
+            email=x.email.value,
+            age=x.age.value,
+            role=x.role,
+            status=x.status,
+            created_at=x.created_at,
+            updated_at=x.updated_at,
+        )
+        for x in result
+    ]

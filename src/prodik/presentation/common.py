@@ -16,6 +16,7 @@ from prodik.domain.user.errors import DomainUserValidationError
 from prodik.presentation.api.auth import router as auth_router
 from prodik.presentation.api.root import router as root_router
 from prodik.presentation.api.user import router as user_router
+from prodik.presentation.api.model import router as model_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     UserNotFoundError: status.HTTP_404_NOT_FOUND,
@@ -53,6 +54,7 @@ def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router)
     app.include_router(auth_router)
     app.include_router(user_router)
+    app.include_router(model_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
