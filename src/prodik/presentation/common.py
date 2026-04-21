@@ -8,6 +8,7 @@ from prodik.application.errors import (
     InvalidCredentialsError,
     ModeratorCannotBeDeactivatedError,
     NotEnoughRightsError,
+    TaskNotFoundError,
     UserDeactivatedError,
     UserNotFoundError,
     UserSessionRevokedError,
@@ -16,10 +17,12 @@ from prodik.domain.user.errors import DomainUserValidationError
 from prodik.presentation.api.auth import router as auth_router
 from prodik.presentation.api.model import router as model_router
 from prodik.presentation.api.root import router as root_router
+from prodik.presentation.api.task import router as task_router
 from prodik.presentation.api.user import router as user_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
     UserNotFoundError: status.HTTP_404_NOT_FOUND,
+    TaskNotFoundError: status.HTTP_404_NOT_FOUND,
     UserDeactivatedError: status.HTTP_403_FORBIDDEN,
     NotEnoughRightsError: status.HTTP_403_FORBIDDEN,
     UserSessionRevokedError: status.HTTP_403_FORBIDDEN,
@@ -54,6 +57,7 @@ def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router)
     app.include_router(auth_router)
     app.include_router(user_router)
+    app.include_router(task_router)
     app.include_router(model_router)
 
 
