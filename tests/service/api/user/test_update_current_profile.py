@@ -235,7 +235,7 @@ async def test_update_current_profile_age_too_big(
 ) -> None:
     user = await test_user_factory.create_user_info()
     request = UpdateProfileRequestFactory.build(
-        age=random.randint(99, 130)
+        age=random.randint(100, 130)
     )
 
     response = await test_client.put(

@@ -29,3 +29,8 @@ class UserSchema(BaseModel):
     status: UserStatus
     created_at: datetime
     updated_at: datetime
+
+
+class GetAllUsersRequest(BaseModel):
+    page: int
+    size: int
