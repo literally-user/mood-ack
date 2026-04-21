@@ -83,7 +83,7 @@ async def user_session_repository(test_container: AsyncContainer) -> UserSession
         return cast(UserSessionRepository, await container.get(UserSessionRepository))
 
 @pytest.fixture
-async def test_user_factory(faker: Faker, test_container: AsyncContainer):
+async def test_user_factory(faker: Faker, test_container: AsyncContainer) -> UserFactory:
     async with test_container() as container:
         return UserFactory(
             faker,
