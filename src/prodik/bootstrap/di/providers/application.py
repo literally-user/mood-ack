@@ -1,7 +1,7 @@
 from dishka import Provider, Scope, provide_all
 
-from prodik.application.model.query import GetPredictingModelInfoInteractor
 from prodik.application.auth import OAuthLoginInteractor, RefreshTokenInteractor
+from prodik.application.model.query import GetPredictingModelInfoInteractor
 from prodik.application.task.moderation import CancelTaskInteractor
 from prodik.application.task.query import (
     GetAllTasksByUserInteractor,
@@ -17,14 +17,14 @@ from prodik.application.user.command import (
     UpdateCurrentProfileInteractor,
     UpdateProfileInteractor,
 )
+from prodik.application.user.moderation import (
+    ActivateUserInteractor,
+    DeactivateUserInteractor,
+)
 from prodik.application.user.query import (
     GetAllUsersInteractor,
     GetCurrentProfileInteractor,
     GetUserProfileInteractor,
-)
-from prodik.application.user.moderation import (
-    ActivateUserInteractor,
-    DeactivateUserInteractor,
 )
 
 

@@ -134,9 +134,7 @@ async def get_user_profile(
 
 @router.get("/{page}/{size}", status_code=status.HTTP_200_OK)
 async def get_all_users(
-    page: int,
-    size: int,
-    interactor: FromDishka[GetAllUsersInteractor]
+    page: int, size: int, interactor: FromDishka[GetAllUsersInteractor]
 ) -> list[UserSchema]:
     result = await interactor.execute(page, size)
     return [
