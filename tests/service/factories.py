@@ -5,15 +5,15 @@ from uuid import uuid4
 import random
 
 from faker import Faker
-from dishka import AsyncContainer
 from polyfactory.factories import TypedDictFactory
 
-from prodik.domain.user import User, UserId, Username, Age, FirstName, LastName, Email
+from prodik.domain.user import User, UserId
 from prodik.domain.credentials import UserSession, LocalAuthorization, UserSessionId, LocalAuthorizationId
 from prodik.application.interfaces.token_manager import RefreshTokenManager, AccessTokenManager
 from prodik.application.interfaces.password_hasher import PasswordHasher
-from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository, LocalAuthorizationRepository
+from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository, LocalAuthorizationRepository, RawInputRepository, TaskRepository
 from prodik.infrastructure.config import APIConfig
+from prodik.domain.task import Task, TaskId, RawInput, RawInputId, InputType
 
 @dataclass
 class TestUserInformation:
@@ -114,6 +114,44 @@ class UserFactory:
         information.user.promote()
         await self.user_repository.update(information.user)
         return information
+
+@dataclass
+class TaskFactory:
+    raw_input_repository: RawInputRepository
+    task_repository: TaskRepository
+
+    async def create_pending_task(self, user: User, input_type: InputType) -> Task:
+        match input_type:
+            case InputType.RAW:
+                task_input = RawInput.new(
+                    id=RawInputId(uuid4()),
+                    content=gen_string(50, 100)
+                )
+                await self.raw_input_repository.create(task_input)
+            case _:
+                # TODO: Implement File input
+                task_input = RawInput.new(
+                    id=RawInputId(uuid4()),
+                    content=gen_string(50, 100)
+                )
+                await self.raw_input_repository.create(task_input)
+
+        task = Task.new(
+            id=TaskId(uuid4()),
+            owner=user,
+            input=task_input,
+        )
+        await self.task_repository.create(task)
+
+        return task
+    
+    async def create_done_task(self, user: User, input_type: InputType) -> Task:
+        task = await self.create_pending_task(user, input_type)
+        task.set_result(0.5)
+
+        await self.task_repository.update(task)
+
+        return task
 
 def gen_string(a: int, b: int) -> str:
     return ''.join(random.choice(list(ascii_letters)) for _ in range(random.randint(a, b)))

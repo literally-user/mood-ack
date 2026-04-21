@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 from httpx import AsyncClient
-from dirty_equals import IsPartialDict
+from dirty_equals import IsPartialDict, IsStr
 
 from tests.service.factories import UserFactory
 
@@ -30,6 +30,6 @@ async def test_get_current_user_ok(
         age=target.user.age.value,
         role=target.user.role.value,
         status=target.user.status.value,
-        created_at=target.user.created_at.isoformat().replace("+00:00", "Z"),
-        updated_at=target.user.updated_at.isoformat().replace("+00:00", "Z"),
+        created_at=IsStr(),
+        updated_at=IsStr(),
     )

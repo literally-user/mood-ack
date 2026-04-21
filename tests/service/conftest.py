@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from dishka import Provider, provide, AsyncContainer, Scope, make_async_container
 
-from tests.service.factories import UserFactory, TestUserInformation
+from tests.service.factories import UserFactory, TaskFactory
 
 from prodik.bootstrap.api import create_app
 from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
@@ -20,7 +20,7 @@ from prodik.infrastructure.config import load_config, Config, PersistenceConfig,
 from prodik.infrastructure.db import start_mapper
 from prodik.bootstrap.cli import run_migrations
 from prodik.application.interfaces.password_hasher import PasswordHasher
-from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository, LocalAuthorizationRepository
+from prodik.application.interfaces.repositories import UserRepository, UserSessionRepository, LocalAuthorizationRepository, RawInputRepository, TaskRepository
 from prodik.application.interfaces.token_manager import AccessTokenManager, RefreshTokenManager
 
 @pytest.fixture(scope="session", autouse=True)
@@ -53,6 +53,7 @@ async def test_container(
         @provide(scope=Scope.REQUEST)
         async def session(self) -> AsyncGenerator[AsyncSession]:
             yield test_session
+
 
     container = make_async_container(
         HTTPXClientProvider(),
@@ -94,6 +95,14 @@ async def test_user_factory(faker: Faker, test_container: AsyncContainer) -> Use
             await container.get(LocalAuthorizationRepository),
             await container.get(PasswordHasher),
             await container.get(APIConfig),
+        )
+
+@pytest.fixture
+async def test_task_factory(test_container: AsyncContainer) -> TaskFactory:
+    async with test_container() as container:
+        return TaskFactory(
+            await container.get(RawInputRepository),
+            await container.get(TaskRepository),
         )
 
 @pytest.fixture
