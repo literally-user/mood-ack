@@ -12,10 +12,12 @@ from prodik.infrastructure.password_hasher import PasswordHasherImpl
 from prodik.infrastructure.repositories import (
     LocalAuthorizationRepositoryImpl,
     OAuthAuthorizationRepositoryImpl,
+    RawInputRepositoryImpl,
     TaskRepositoryImpl,
     UserRepositoryImpl,
     UserSessionRepositoryImpl,
 )
+from prodik.infrastructure.task_processor import TaskProcessorImpl
 from prodik.infrastructure.token_manager import (
     AccessTokenManagerImpl,
     OAuthTokenManagerImpl,
@@ -42,6 +44,8 @@ class InfrastructureProvider(Provider):
         WithParents[IdentityProviderImpl],
         WithParents[PredictingModelImpl],
         WithParents[FileStorageGatewayImpl],
+        WithParents[TaskProcessorImpl],
+        WithParents[RawInputRepositoryImpl],
         scope=Scope.REQUEST,
     )
 

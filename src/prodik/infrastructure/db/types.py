@@ -1,10 +1,11 @@
 from typing import Any, ClassVar, override
 
-from sqlalchemy import Dialect, Integer, String
+from sqlalchemy import Dialect, Float, Integer, String
 from sqlalchemy.types import TypeDecorator
 
 from prodik.domain.credentials import IP
 from prodik.domain.shared import ValueObject
+from prodik.domain.task import TaskResult
 from prodik.domain.user import (
     Age,
     Email,
@@ -63,3 +64,9 @@ class EmailType(BaseVOTypeDecorator[Email]):
     impl = String
     cache_ok = True
     vo_class = Email
+
+
+class TaskResultType(BaseVOTypeDecorator[TaskResult]):
+    impl = Float
+    cache_ok = True
+    vo_class = TaskResult

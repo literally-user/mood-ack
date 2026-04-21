@@ -4,7 +4,11 @@ from uuid import uuid4
 from prodik.application.errors import UserSessionRevokedError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
-from prodik.application.interfaces.repositories import TaskRepository
+from prodik.application.interfaces.repositories import (
+    RawInputRepository,
+    TaskRepository,
+)
+from prodik.application.interfaces.task_processor import TaskProcessor
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.task import RawInput, RawInputId, Task, TaskId
 
@@ -13,8 +17,10 @@ from prodik.domain.task import RawInput, RawInputId, Task, TaskId
 class ProcessRawInteractor:
     idp: IdentityProvider
     predicting_model: PredictingModel
-    task_repository: TaskRepository
     tx_manager: TransactionManager
+    task_repository: TaskRepository
+    raw_input_repository: RawInputRepository
+    task_processor: TaskProcessor
 
     async def execute(self, text: str) -> Task:
         async with self.tx_manager:
@@ -32,8 +38,9 @@ class ProcessRawInteractor:
                 owner=current_user,
                 input=raw_input,
             )
-
-            task.set_result(self.predicting_model.process(text, task))
-
             await self.task_repository.create(task)
+            await self.raw_input_repository.create(raw_input)
+
+            self.task_processor.process(text, task)
+
             return task

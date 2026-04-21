@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-from prodik.domain.task import Task
-
 
 @dataclass
 class ModelMeta:
@@ -12,4 +10,4 @@ class ModelMeta:
 
 class PredictingModel(Protocol):
     def get_model_info(self) -> ModelMeta: ...
-    def process(self, text: str, task: Task) -> float: ...
+    def process(self, text: str) -> float: ...

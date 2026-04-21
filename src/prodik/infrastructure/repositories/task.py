@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import select
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prodik.application.interfaces.repositories import TaskRepository
@@ -13,15 +13,42 @@ class TaskRepositoryImpl(TaskRepository):
     session: AsyncSession
 
     async def create(self, task: Task) -> None:
-        self.session.add(task)
+        await self.session.execute(
+            insert(Task).values(
+                id=task.id,
+                owner_id=task.owner_id,
+                state=task.state,
+                input_type=task.input_type,
+                input_id=task.input_id,
+                result=task.result.value if task.result else None,
+                created_at=task.created_at,
+                updated_at=task.updated_at,
+            )
+        )
 
     async def update(self, task: Task) -> None:
-        self.session.add(task)
+        await self.session.execute(
+            update(Task)
+            .where(Task.id == task.id)  # type: ignore
+            .values(
+                owner_id=task.owner_id,
+                state=task.state,
+                input_type=task.input_type,
+                input_id=task.input_id,
+                result=task.result or None,
+                updated_at=task.updated_at,
+            )
+        )
 
     async def get_by_id(self, id: TaskId) -> Task | None:
         stmt = select(Task).where(Task.id == id)  # type: ignore
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def delete(self, task: Task) -> None:
+        await self.session.execute(
+            delete(Task).where(Task.id == task.id)  # type: ignore
+        )
 
     async def get_all(self, page: int, size: int) -> list[Task]:
         stmt = select(Task).offset((page - 1) * size).limit(size)

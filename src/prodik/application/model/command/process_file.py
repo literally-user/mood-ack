@@ -10,6 +10,7 @@ from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
+from prodik.application.interfaces.task_processor import TaskProcessor
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.task import FileId, FileInput, FileInputId, Task, TaskId
 from prodik.infrastructure.file import FileProcessingRegistry
@@ -22,6 +23,7 @@ class ProcessFileInteractor:
     file_storage_gateway: FileStorageGateway
     file_processing_registry: FileProcessingRegistry
     task_repository: TaskRepository
+    task_processor: TaskProcessor
     tx_manager: TransactionManager
 
     async def execute(self, file_id: FileId) -> Task:
@@ -52,9 +54,8 @@ class ProcessFileInteractor:
                 owner=current_user,
                 input=file_input,
             )
-
-            task.set_result(self.predicting_model.process(readable_content, task))
-
             await self.task_repository.create(task)
+
+            self.task_processor.process(readable_content, task)
 
             return task

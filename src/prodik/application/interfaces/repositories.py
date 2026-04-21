@@ -6,7 +6,7 @@ from prodik.domain.credentials import (
     OAuthAuthorization,
     UserSession,
 )
-from prodik.domain.task import Task, TaskId
+from prodik.domain.task import RawInput, Task, TaskId
 from prodik.domain.user import Email, User, UserId, Username
 
 
@@ -48,3 +48,7 @@ class TaskRepository(Protocol):
     async def get_all_by_user_id(
         self, user_id: UserId, page: int, size: int
     ) -> list[Task]: ...
+
+
+class RawInputRepository(Protocol):
+    async def create(self, input: RawInput) -> None: ...

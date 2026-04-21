@@ -7,6 +7,7 @@ from .model import (
     RawInputId,
     Task,
     TaskId,
+    TaskResult,
     TaskState,
 )
 
@@ -19,5 +20,6 @@ __all__ = (
     "RawInputId",
     "Task",
     "TaskId",
+    "TaskResult",
     "TaskState",
 )

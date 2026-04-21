@@ -3,7 +3,6 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum,
-    Float,
     ForeignKey,
     MetaData,
     String,
@@ -17,7 +16,7 @@ from prodik.domain.credentials import (
     UserSession,
     UserSessionStatus,
 )
-from prodik.domain.task import InputType, Task, TaskState
+from prodik.domain.task import InputType, RawInput, Task, TaskState
 from prodik.domain.user import (
     User,
     UserRole,
@@ -29,6 +28,7 @@ from prodik.infrastructure.db.types import (
     FirstNameType,
     IPType,
     LastNameType,
+    TaskResultType,
     UsernameType,
 )
 
@@ -105,7 +105,16 @@ task_record_table = Table(
     Column("state", Enum(TaskState), nullable=False),
     Column("input_type", Enum(InputType), nullable=False),
     Column("input_id", UUID(as_uuid=True), nullable=False),
-    Column("result", Float, nullable=False),
+    Column("result", TaskResultType, nullable=True),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+)
+
+raw_input_table = Table(
+    "raw_input_record",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True, nullable=False),
+    Column("content", String, nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False),
     Column("updated_at", DateTime(timezone=True), nullable=False),
 )
@@ -131,4 +140,8 @@ def start_mapper() -> None:
     registry_mapper.map_imperatively(
         OAuthAuthorization,
         oauth_authorization_table,
+    )
+    registry_mapper.map_imperatively(
+        RawInput,
+        raw_input_table,
     )

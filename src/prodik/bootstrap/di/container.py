@@ -30,5 +30,6 @@ def get_async_container(config: Config) -> AsyncContainer:
             PersistenceConfig: config.persistence,
             ObjectStorageConfig: config.object_storage,
             KeyCloakConfig: config.keycloak,
+            Config: config,
         },
     )
