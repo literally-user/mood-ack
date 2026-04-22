@@ -1,3 +1,4 @@
+from .file_input import FileInputRepositoryImpl
 from .local_authorization import LocalAuthorizationRepositoryImpl
 from .oauth_authorization import OAuthAuthorizationRepositoryImpl
 from .raw_input import RawInputRepositoryImpl
@@ -6,6 +7,7 @@ from .user import UserRepositoryImpl
 from .user_session import UserSessionRepositoryImpl
 
 __all__ = (
+    "FileInputRepositoryImpl",
     "LocalAuthorizationRepositoryImpl",
     "OAuthAuthorizationRepositoryImpl",
     "RawInputRepositoryImpl",

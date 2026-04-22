@@ -10,8 +10,8 @@ class GetFileStorageLinkInteractor:
     file_storage_gateway: FileStorageGateway
     idp: IdentityProvider
 
-    async def execute(self) -> str:
+    async def execute(self, filename: str) -> str:
         current_user_session = await self.idp.get_current_session()
         if current_user_session.is_revoked():
             raise UserSessionRevokedError("Session was revoked")
-        return await self.file_storage_gateway.get_storage_link()
+        return await self.file_storage_gateway.get_storage_link(filename)

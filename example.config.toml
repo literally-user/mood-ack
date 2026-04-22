@@ -7,11 +7,12 @@ secret = "AAAAAAAAAABBBBBBBBBB"
 expires_in = 3600
 
 [object_storage]
-url = "files.literally.io"
-secret_key = "admin_password"
-access_key = "admin"
-region = "RU-SPB"
-bucket = "ml"
+url = "http://files.literally.io:9000"
+secret_key = "your_admin_secret_key"
+access_key = "your_admin_access_key"
+region = "us-east-1"
+bucket = "machine-learning"
+temp_directory = "src/prodik/infrastructure/file/temp"
 
 [keycloak]
 client_id = "your_client_id"

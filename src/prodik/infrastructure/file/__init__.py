@@ -1,6 +1,7 @@
-from .registry import FileProcessingClient, FileProcessingRegistry
+from .registry import FileProcessingRegistry
+from .txt import TXTProcessingClient
 
 __all__ = (
-    "FileProcessingClient",
     "FileProcessingRegistry",
+    "TXTProcessingClient",
 )

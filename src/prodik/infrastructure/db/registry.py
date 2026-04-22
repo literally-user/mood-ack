@@ -16,7 +16,7 @@ from prodik.domain.credentials import (
     UserSession,
     UserSessionStatus,
 )
-from prodik.domain.task import InputType, RawInput, Task, TaskState
+from prodik.domain.task import FileInput, InputType, RawInput, Task, TaskState
 from prodik.domain.user import (
     User,
     UserRole,
@@ -119,6 +119,15 @@ raw_input_table = Table(
     Column("updated_at", DateTime(timezone=True), nullable=False),
 )
 
+file_input_table = Table(
+    "file_input_record",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True, nullable=False),
+    Column("file_id", String, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+)
+
 
 def start_mapper() -> None:
     registry_mapper.map_imperatively(
@@ -144,4 +153,8 @@ def start_mapper() -> None:
     registry_mapper.map_imperatively(
         RawInput,
         raw_input_table,
+    )
+    registry_mapper.map_imperatively(
+        FileInput,
+        file_input_table,
     )

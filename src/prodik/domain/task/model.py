@@ -15,8 +15,8 @@ from prodik.domain.user import User, UserId
 MAX_ALLOWED_TASK_RESULT: Final[float] = 1.0
 MIN_ALLOWED_TASK_RESULT: Final[float] = 0.0
 
+FileId = NewType("FileId", str)
 TaskId = NewType("TaskId", UUID)
-FileId = NewType("FileId", UUID)
 FileInputId = NewType("FileInputId", UUID)
 RawInputId = NewType("RawInputId", UUID)
 

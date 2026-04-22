@@ -2,7 +2,7 @@ from dishka import Provider, Scope, WithParents, provide, provide_all
 from httpx import AsyncClient
 
 from prodik.infrastructure.config import KeyCloakConfig
-from prodik.infrastructure.file import FileProcessingRegistry
+from prodik.infrastructure.file import FileProcessingRegistry, TXTProcessingClient
 from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
 from prodik.infrastructure.identity_provider import IdentityProviderImpl
 from prodik.infrastructure.ml import PredictingModelImpl
@@ -10,6 +10,7 @@ from prodik.infrastructure.oauth.keycloak import KeycloakOAuthClient
 from prodik.infrastructure.oauth.registry import OAuthClientRegistry
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
 from prodik.infrastructure.repositories import (
+    FileInputRepositoryImpl,
     LocalAuthorizationRepositoryImpl,
     OAuthAuthorizationRepositoryImpl,
     RawInputRepositoryImpl,
@@ -40,14 +41,24 @@ class InfrastructureProvider(Provider):
         WithParents[StateTokenManagerImpl],
         WithParents[OAuthTokenManagerImpl],
         WithParents[TransactionManagerImpl],
-        WithParents[FileProcessingRegistry],
         WithParents[IdentityProviderImpl],
         WithParents[PredictingModelImpl],
         WithParents[FileStorageGatewayImpl],
         WithParents[TaskProcessorImpl],
         WithParents[RawInputRepositoryImpl],
+        WithParents[FileInputRepositoryImpl],
         scope=Scope.REQUEST,
     )
+
+    @provide(scope=Scope.REQUEST)
+    def file_client_registry(self) -> FileProcessingRegistry:
+        registry = FileProcessingRegistry()
+
+        txt_client = TXTProcessingClient()
+
+        registry.register("txt", txt_client)
+
+        return registry
 
     @provide(scope=Scope.REQUEST)
     def oauth_registry(

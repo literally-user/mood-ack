@@ -18,8 +18,8 @@ services:
         aliases:
           - credentials.literally.io
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin_password
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin_password
     volumes:
       - "./deploy/keycloak.json:/opt/keycloak/data/import/realm.json"
     ports:
@@ -35,6 +35,9 @@ services:
       - rustfs-data:/data
     env_file:
       - "./deploy/rustfs.env"
+    ports:
+      - 9000:9000
+      - 9001:9001
 
   prometheus:
     image: prom/prometheus:latest

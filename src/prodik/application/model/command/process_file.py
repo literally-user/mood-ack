@@ -9,7 +9,10 @@ from prodik.application.errors import (
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.predicting_model import PredictingModel
-from prodik.application.interfaces.repositories import TaskRepository
+from prodik.application.interfaces.repositories import (
+    FileInputRepository,
+    TaskRepository,
+)
 from prodik.application.interfaces.task_processor import TaskProcessor
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.task import FileId, FileInput, FileInputId, Task, TaskId
@@ -23,6 +26,7 @@ class ProcessFileInteractor:
     file_storage_gateway: FileStorageGateway
     file_processing_registry: FileProcessingRegistry
     task_repository: TaskRepository
+    file_input_repository: FileInputRepository
     task_processor: TaskProcessor
     tx_manager: TransactionManager
 
@@ -55,6 +59,7 @@ class ProcessFileInteractor:
                 input=file_input,
             )
             await self.task_repository.create(task)
+            await self.file_input_repository.create(file_input)
 
             self.task_processor.process(readable_content, task)
 

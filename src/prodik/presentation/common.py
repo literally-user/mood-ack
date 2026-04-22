@@ -4,29 +4,36 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from prodik.application.errors import (
+    AccessTokenExpiredError,
     ApplicationError,
     InvalidCredentialsError,
     ModeratorCannotBeDeactivatedError,
     NotEnoughRightsError,
+    ObjectFileNotFoundError,
     TaskNotFoundError,
+    UnsupportedFileExtensionError,
     UserDeactivatedError,
     UserNotFoundError,
     UserSessionRevokedError,
 )
 from prodik.domain.user.errors import DomainUserValidationError
 from prodik.presentation.api.auth import router as auth_router
+from prodik.presentation.api.file import router as file_router
 from prodik.presentation.api.model import router as model_router
 from prodik.presentation.api.root import router as root_router
 from prodik.presentation.api.task import router as task_router
 from prodik.presentation.api.user import router as user_router
 
 EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], int]] = {
+    ObjectFileNotFoundError: status.HTTP_404_NOT_FOUND,
+    UnsupportedFileExtensionError: status.HTTP_422_UNPROCESSABLE_CONTENT,
     UserNotFoundError: status.HTTP_404_NOT_FOUND,
     TaskNotFoundError: status.HTTP_404_NOT_FOUND,
     UserDeactivatedError: status.HTTP_403_FORBIDDEN,
     NotEnoughRightsError: status.HTTP_403_FORBIDDEN,
     UserSessionRevokedError: status.HTTP_403_FORBIDDEN,
     InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
+    AccessTokenExpiredError: status.HTTP_401_UNAUTHORIZED,
     ModeratorCannotBeDeactivatedError: status.HTTP_409_CONFLICT,
     DomainUserValidationError: status.HTTP_422_UNPROCESSABLE_CONTENT,
 }
@@ -54,11 +61,12 @@ async def application_error_handler(
 
 
 def include_handlers(app: FastAPI) -> None:
+    app.include_router(model_router)
     app.include_router(root_router)
     app.include_router(auth_router)
     app.include_router(user_router)
     app.include_router(task_router)
-    app.include_router(model_router)
+    app.include_router(file_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
