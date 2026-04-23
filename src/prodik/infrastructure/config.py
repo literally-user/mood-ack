@@ -33,7 +33,7 @@ class ObjectStorageConfig:
     region: str
     url: str
 
-    temp_directory: str
+    temp_directory: Path
 
 
 @dataclass(slots=True, kw_only=True)
@@ -68,7 +68,7 @@ def load_config() -> Config:
                 secret_key=config["object_storage"]["secret_key"],
                 region=config["object_storage"]["region"],
                 url=config["object_storage"]["url"],
-                temp_directory=config["object_storage"]["temp_directory"],
+                temp_directory=Path(config["object_storage"]["temp_directory"]),
             ),
             keycloak=KeyCloakConfig(
                 client_id=config["keycloak"]["client_id"],

@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-from pathlib import Path
 from uuid import uuid4
 
 from aiobotocore.client import AioBaseClient
@@ -23,7 +22,7 @@ class FileStorageGatewayImpl(FileStorageGateway):
         )
 
     async def get_file_info(self, file_id: FileId) -> FileMeta | None:
-        temp_directory = Path(self.config.temp_directory)
+        temp_directory = self.config.temp_directory
 
         await asyncio.to_thread(
             temp_directory.mkdir,
