@@ -67,15 +67,12 @@ class UpdateProfileInteractor:
                 current_user, target_user
             )
 
-            if request.age is not None:
-                target_user.change_age(request.age)
-            if request.first_name is not None:
-                target_user.change_first_name(request.first_name)
-            if request.last_name is not None:
-                target_user.change_last_name(request.last_name)
-            if request.email is not None:
-                target_user.change_email(request.email)
-            if request.username is not None:
-                target_user.change_username(request.username)
+            target_user.update_profile(
+                request.age,
+                request.first_name,
+                request.last_name,
+                request.email,
+                request.username,
+            )
 
             await self.user_repository.update(target_user)

@@ -190,3 +190,22 @@ class User(Entity[UserId]):
 
     def can_manage_tasks(self) -> bool:
         return self.role == UserRole.MODERATOR
+
+    def update_profile(
+        self,
+        age: int | None,
+        first_name: str | None,
+        last_name: str | None,
+        email: str | None,
+        username: str | None,
+    ) -> None:
+        if age is not None:
+            self.change_age(age)
+        if first_name is not None:
+            self.change_first_name(first_name)
+        if last_name is not None:
+            self.change_last_name(last_name)
+        if email is not None:
+            self.change_email(email)
+        if username is not None:
+            self.change_username(username)
