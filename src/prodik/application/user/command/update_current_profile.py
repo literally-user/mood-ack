@@ -1,13 +1,10 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import InvalidCredentialsError, UserSessionRevokedError
-from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import (
     UserRepository,
-    UserSessionRepository,
 )
 from prodik.application.interfaces.transaction_manager import TransactionManager
-from prodik.domain.credentials import IP
+from prodik.application.services import SessionService
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -21,33 +18,15 @@ class UpdateCurrentProfileRequestDTO:
 
 @dataclass
 class UpdateCurrentProfileInteractor:
-    user_session_repository: UserSessionRepository
+    session_service: SessionService
     user_repository: UserRepository
     tx_manager: TransactionManager
-    idp: IdentityProvider
 
     async def execute(self, request: UpdateCurrentProfileRequestDTO) -> None:
         async with self.tx_manager:
-            current_user_meta = self.idp.get_user_meta()
-            user_ip = self.idp.get_current_ip()
+            auth_meta = await self.session_service.get_authorized_meta()
 
-            current_user_session = (
-                await self.user_session_repository.get_by_user_id_and_ip(
-                    current_user_meta.user_id, IP(user_ip)
-                )
-            )
-            if current_user_session is None:
-                raise InvalidCredentialsError("Invalid authorization header format")
-            if current_user_session.is_revoked():
-                raise UserSessionRevokedError("Session was revoked")
-
-            current_user = await self.user_repository.get_by_uuid(
-                current_user_meta.user_id
-            )
-            if current_user is None:
-                raise InvalidCredentialsError("Invalid email or password")
-
-            current_user.update_profile(
+            auth_meta.user.update_profile(
                 request.age,
                 request.first_name,
                 request.last_name,
@@ -55,4 +34,4 @@ class UpdateCurrentProfileInteractor:
                 request.username,
             )
 
-            await self.user_repository.update(current_user)
+            await self.user_repository.update(auth_meta.user)

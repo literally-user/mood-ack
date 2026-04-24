@@ -4,6 +4,7 @@ from prodik.application.auth import OAuthLoginInteractor, RefreshTokenInteractor
 from prodik.application.file.query import GetFileStorageLinkInteractor
 from prodik.application.model.command import ProcessFileInteractor, ProcessRawInteractor
 from prodik.application.model.query import GetPredictingModelInfoInteractor
+from prodik.application.services import SessionService
 from prodik.application.task.moderation import CancelTaskInteractor
 from prodik.application.task.query import (
     GetAllTasksByUserInteractor,
@@ -30,6 +31,7 @@ from prodik.application.user.query import (
 
 class ApplicationProvider(Provider):
     provides = provide_all(
+        SessionService,
         GetFileStorageLinkInteractor,
         GetPredictingModelInfoInteractor,
         GetAllUsersInteractor,
