@@ -6,7 +6,7 @@ lint:
 clean:
     docker compose -f docker-compose.base.yaml down -v
 
-enter target:
+attach target:
     docker-compose -f docker-compose.base.yaml exec -it -t {{target}} /bin/bash
 
 restart target:
