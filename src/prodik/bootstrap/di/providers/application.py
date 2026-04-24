@@ -1,35 +1,38 @@
 from dishka import Provider, Scope, provide_all
 
-from prodik.application.auth import OAuthLoginInteractor, RefreshTokenInteractor
+from prodik.application.auth import (
+    ChangePasswordInteractor,
+    LoginInteractor,
+    OAuthLoginInteractor,
+    RefreshTokenInteractor,
+    RegisterInteractor,
+)
 from prodik.application.content_processing import (
     ProcessFileInteractor,
     ProcessRawInteractor,
 )
-from prodik.application.file.query import GetFileStorageLinkInteractor
-from prodik.application.model.query import GetPredictingModelInfoInteractor
-from prodik.application.services import SessionService
-from prodik.application.task.moderation import CancelTaskInteractor
-from prodik.application.task.query import (
+from prodik.application.manage_profile import (
+    UpdateCurrentProfileInteractor,
+    UpdateProfileInteractor,
+)
+from prodik.application.manage_task import CancelTaskInteractor
+from prodik.application.manage_user import (
+    ActivateUserInteractor,
+    DeactivateUserInteractor,
+)
+from prodik.application.receive_model_info import GetPredictingModelInfoInteractor
+from prodik.application.receive_task_info import (
     GetAllTasksByUserInteractor,
     GetAllTasksInteractor,
     GetTaskInteractor,
 )
-from prodik.application.user.command import (
-    ChangePasswordInteractor,
-    LoginInteractor,
-    RegisterInteractor,
-    UpdateCurrentProfileInteractor,
-    UpdateProfileInteractor,
-)
-from prodik.application.user.moderation import (
-    ActivateUserInteractor,
-    DeactivateUserInteractor,
-)
-from prodik.application.user.query import (
+from prodik.application.receive_upload_link import GetFileStorageLinkInteractor
+from prodik.application.receive_user_info import (
     GetAllUsersInteractor,
     GetCurrentProfileInteractor,
     GetUserProfileInteractor,
 )
+from prodik.application.services import SessionService
 
 
 class ApplicationProvider(Provider):

@@ -3,7 +3,7 @@ from http import HTTPStatus
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
-from prodik.application.task.query import (
+from prodik.application.receive_task_info import (
     GetAllTasksByUserInteractor,
     GetAllTasksInteractor,
     GetTaskInteractor,

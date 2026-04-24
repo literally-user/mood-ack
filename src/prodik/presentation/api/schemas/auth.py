@@ -3,6 +3,11 @@ from typing import Annotated
 from pydantic import BaseModel, EmailStr, Field, SecretStr
 
 
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+
+
 class AuthResponse(BaseModel):
     access_token: Annotated[str, Field("Session access token")]
     refresh_token: Annotated[str, Field("Session refresh token")]

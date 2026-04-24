@@ -5,11 +5,6 @@ from pydantic import BaseModel
 from prodik.domain.user import UserId, UserRole, UserStatus
 
 
-class ChangePasswordRequest(BaseModel):
-    old_password: str
-    new_password: str
-
-
 class UpdateProfileRequest(BaseModel):
     email: str | None
     first_name: str | None
