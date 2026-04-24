@@ -6,7 +6,7 @@ from prodik.domain.credentials import (
     OAuthAuthorization,
     UserSession,
 )
-from prodik.domain.task import FileInput, RawInput, Task, TaskId
+from prodik.domain.task import FileId, FileInput, RawInput, Task, TaskId
 from prodik.domain.user import Email, User, UserId, Username
 
 
@@ -56,3 +56,4 @@ class RawInputRepository(Protocol):
 
 class FileInputRepository(Protocol):
     async def create(self, input: FileInput) -> None: ...
+    async def get_by_file_id(self, file_id: FileId) -> FileInput | None: ...

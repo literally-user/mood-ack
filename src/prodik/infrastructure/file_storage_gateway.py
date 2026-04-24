@@ -1,10 +1,9 @@
-import asyncio
 from dataclasses import dataclass
 from uuid import uuid4
 
 from aiobotocore.client import AioBaseClient
 
-from prodik.application.interfaces.gateways import FileMeta, FileStorageGateway
+from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.domain.task import FileId
 from prodik.infrastructure.config import ObjectStorageConfig
 
@@ -21,26 +20,14 @@ class FileStorageGatewayImpl(FileStorageGateway):
             ExpiresIn=3600,
         )
 
-    async def get_file_info(self, file_id: FileId) -> FileMeta | None:
-        temp_directory = self.config.temp_directory
-
-        await asyncio.to_thread(
-            temp_directory.mkdir,
-            parents=True,
-            exist_ok=True,
+    async def file_exists(self, file_id: FileId) -> bool:
+        await self.client.head_object(  # type: ignore
+            Bucket=self.config.bucket,
+            Key=str(file_id),
         )
+        return True
 
-        file_path = temp_directory / str(file_id)
-
+    async def download_file(self, file_id: FileId) -> None:
         await self.client.download_file(  # type: ignore
-            self.config.bucket,
-            str(file_id),
-            str(file_path),
-        )
-
-        content = await asyncio.to_thread(file_path.read_text)
-
-        return FileMeta(
-            content=content,
-            extension=str(file_id).split(".")[-1],
+            self.config.bucket, str(file_id), str(self.config.temp_directory / file_id)
         )

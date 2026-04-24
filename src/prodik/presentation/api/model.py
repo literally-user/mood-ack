@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, status
 
-from prodik.application.model.command import ProcessRawInteractor
+from prodik.application.content_processing import ProcessRawInteractor
 from prodik.application.model.query import GetPredictingModelInfoInteractor
 from prodik.presentation.api.schemas.model import (
     GetModelInfoResponse,

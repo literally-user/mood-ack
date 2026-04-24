@@ -1,8 +1,8 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, status
 
+from prodik.application.content_processing import ProcessFileInteractor
 from prodik.application.file.query import GetFileStorageLinkInteractor
-from prodik.application.model.command import ProcessFileInteractor
 from prodik.domain.task import FileId
 from prodik.presentation.api.schemas.task import TaskSchema
 

@@ -1,8 +1,11 @@
 from dishka import Provider, Scope, provide_all
 
 from prodik.application.auth import OAuthLoginInteractor, RefreshTokenInteractor
+from prodik.application.content_processing import (
+    ProcessFileInteractor,
+    ProcessRawInteractor,
+)
 from prodik.application.file.query import GetFileStorageLinkInteractor
-from prodik.application.model.command import ProcessFileInteractor, ProcessRawInteractor
 from prodik.application.model.query import GetPredictingModelInfoInteractor
 from prodik.application.services import SessionService
 from prodik.application.task.moderation import CancelTaskInteractor

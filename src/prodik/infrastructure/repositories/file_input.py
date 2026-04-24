@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prodik.application.interfaces.repositories import FileInputRepository
-from prodik.domain.task.model import FileInput
+from prodik.domain.task.model import FileId, FileInput
 
 
 @dataclass
@@ -20,3 +20,10 @@ class FileInputRepositoryImpl(FileInputRepository):
                 updated_at=input.updated_at,
             )
         )
+
+    async def get_by_file_id(self, file_id: FileId) -> FileInput | None:
+        stmt = select(FileInput).where(
+            FileInput.file_id == file_id  # type: ignore
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
