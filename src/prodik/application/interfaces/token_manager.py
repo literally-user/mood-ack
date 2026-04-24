@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 from typing import Protocol
-from uuid import UUID
 
-from prodik.domain.user import User, UserRole
+from prodik.domain.user import User, UserId, UserRole
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
 class UserData:
-    uuid: UUID
     role: UserRole
+    user_id: UserId
     expires_in: int
 
 

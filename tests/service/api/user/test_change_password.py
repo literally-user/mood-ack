@@ -53,9 +53,9 @@ async def test_change_password_session_revoked(
         }
     )
 
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() == IsPartialDict(
-        detail="Invalid authorization header format"
+        detail="Session was revoked"
     )
 
 @pytest.mark.asyncio
@@ -87,7 +87,7 @@ async def test_change_password_local_auth_not_found(
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == IsPartialDict(
-        detail="Invalid authorization header format"
+        detail="Invalid email or password"
     )
 
 @pytest.mark.asyncio

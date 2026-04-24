@@ -1,7 +1,6 @@
 import secrets
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from uuid import UUID
 
 import jwt
 
@@ -14,7 +13,7 @@ from prodik.application.interfaces.token_manager import (
     StateTokenManager,
     UserData,
 )
-from prodik.domain.user import User, UserRole
+from prodik.domain.user import User, UserId, UserRole
 from prodik.infrastructure.config import APIConfig
 
 
@@ -46,7 +45,7 @@ class AccessTokenManagerImpl(AccessTokenManager):
         )
 
         return UserData(
-            uuid=UUID(data["sub"]),
+            user_id=UserId(data["sub"]),
             role=UserRole(data["role"]),
             expires_in=data["exp"],
         )
