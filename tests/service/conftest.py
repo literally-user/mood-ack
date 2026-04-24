@@ -16,6 +16,7 @@ from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.bootstrap.di.providers.application import ApplicationProvider
 from prodik.bootstrap.di.providers.connection import S3Provider
+from prodik.bootstrap.di.providers.domain import DomainProvider
 from prodik.infrastructure.config import load_config, Config, PersistenceConfig, APIConfig, ObjectStorageConfig, KeyCloakConfig
 from prodik.infrastructure.db import start_mapper
 from prodik.bootstrap.cli import run_migrations
@@ -57,6 +58,7 @@ async def test_container(
 
     container = make_async_container(
         HTTPXClientProvider(),
+        DomainProvider(),
         TestConnectionProvider(),
         InfrastructureProvider(),
         ApplicationProvider(),

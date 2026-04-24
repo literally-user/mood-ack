@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from prodik.application.errors import (
     InvalidCredentialsError,
     ModeratorCannotBeDeactivatedError,
-    NotEnoughRightsError,
     UserNotFoundError,
     UserSessionRevokedError,
 )
@@ -15,11 +14,13 @@ from prodik.application.interfaces.repositories import (
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.credentials import IP
 from prodik.domain.user import UserId
+from prodik.domain.user.services import AccessControlService
 
 
 @dataclass
 class DeactivateUserInteractor:
     idp: IdentityProvider
+    access_control_service: AccessControlService
     user_session_repository: UserSessionRepository
     user_repository: UserRepository
     tx_manager: TransactionManager
@@ -45,8 +46,7 @@ class DeactivateUserInteractor:
             if current_user is None:
                 raise InvalidCredentialsError("Invalid email or password")
 
-            if not current_user.can_manage_users():
-                raise NotEnoughRightsError("Not enough rights to perform operation")
+            self.access_control_service.ensure_can_moderate_users(current_user)
 
             if current_user.id == target_id:
                 raise ModeratorCannotBeDeactivatedError(

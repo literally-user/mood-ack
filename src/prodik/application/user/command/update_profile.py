@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from prodik.application.errors import (
     InvalidCredentialsError,
-    NotEnoughRightsError,
     UserNotFoundError,
     UserSessionRevokedError,
 )
@@ -14,6 +13,7 @@ from prodik.application.interfaces.repositories import (
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.domain.credentials import IP
 from prodik.domain.user import UserId
+from prodik.domain.user.services import AccessControlService
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -27,6 +27,7 @@ class UpdateProfileRequestDTO:
 
 @dataclass
 class UpdateProfileInteractor:
+    access_control_service: AccessControlService
     user_session_repository: UserSessionRepository
     user_repository: UserRepository
     tx_manager: TransactionManager
@@ -55,15 +56,16 @@ class UpdateProfileInteractor:
             if current_user is None:
                 raise InvalidCredentialsError("Invalid email or password")
 
-            if not current_user.can_manage_users() and current_user.id != target_id:
-                raise NotEnoughRightsError("Not enough rights to perform operation")
-
             if current_user.id == target_id:
                 target_user = current_user
             else:
                 target_user = await self.user_repository.get_by_uuid(target_id)  # type: ignore
                 if target_user is None:
                     raise UserNotFoundError("User not found")
+
+            self.access_control_service.ensure_can_update_profile(
+                current_user, target_user
+            )
 
             if request.age is not None:
                 target_user.change_age(request.age)

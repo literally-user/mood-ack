@@ -6,6 +6,7 @@ from prodik.bootstrap.di.providers.connection import (
     ConnectionProvider,
     S3Provider,
 )
+from prodik.bootstrap.di.providers.domain import DomainProvider
 from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
 from prodik.infrastructure.config import (
@@ -20,6 +21,7 @@ from prodik.infrastructure.config import (
 def get_async_container(config: Config) -> AsyncContainer:
     return make_async_container(
         FastapiProvider(),
+        DomainProvider(),
         S3Provider(),
         InfrastructureProvider(),
         ApplicationProvider(),

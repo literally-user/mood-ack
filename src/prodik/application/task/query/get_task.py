@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from prodik.application.errors import (
     InvalidCredentialsError,
-    NotEnoughRightsError,
     TaskNotFoundError,
     UserSessionRevokedError,
 )
@@ -14,12 +13,14 @@ from prodik.application.interfaces.repositories import (
 )
 from prodik.domain.credentials import IP
 from prodik.domain.task import Task, TaskId
+from prodik.domain.user.services import AccessControlService
 
 
 @dataclass
 class GetTaskInteractor:
     idp: IdentityProvider
     task_repository: TaskRepository
+    access_control_service: AccessControlService
     user_session_repository: UserSessionRepository
     user_repository: UserRepository
 
@@ -43,7 +44,6 @@ class GetTaskInteractor:
         if task is None:
             raise TaskNotFoundError("Task not found")
 
-        if not current_user.can_manage_tasks() and task.owner_id != current_user.id:
-            raise NotEnoughRightsError("Not enough rights to perform operation")
+        self.access_control_service.ensure_can_get_task(current_user, task)
 
         return task
