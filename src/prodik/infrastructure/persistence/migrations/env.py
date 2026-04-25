@@ -6,11 +6,12 @@ from sqlalchemy import Connection, pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from prodik.infrastructure.config import load_config
-from prodik.infrastructure.db.registry import metadata
+from prodik.infrastructure.persistence.registry import metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
 
 def render_item(type_, obj, autogen_context):
     if hasattr(obj, "__class__"):
@@ -18,6 +19,7 @@ def render_item(type_, obj, autogen_context):
             return f"sa.{obj.impl}"
 
     return False
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -65,7 +67,9 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata, render_item=render_item)
+    context.configure(
+        connection=connection, target_metadata=target_metadata, render_item=render_item
+    )
 
     with context.begin_transaction():
         context.run_migrations()

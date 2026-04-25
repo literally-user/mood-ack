@@ -3,17 +3,17 @@ from pathlib import Path
 from prodik.application.content_processing.errors import UnsupportedFileExtensionError
 from prodik.domain.task import FileId
 from prodik.infrastructure.config import ObjectStorageConfig
-from prodik.infrastructure.file import FileProcessingRegistry
+from prodik.infrastructure.content_parser import ContentParserRegistry
 
 
 class FileReader:
     config: ObjectStorageConfig
-    file_processing_registry: FileProcessingRegistry
+    file_processing_registry: ContentParserRegistry
 
     def __init__(
         self,
         config: ObjectStorageConfig,
-        file_processing_registry: FileProcessingRegistry,
+        file_processing_registry: ContentParserRegistry,
     ) -> None:
         self.file_processing_registry = file_processing_registry
         self.config = config

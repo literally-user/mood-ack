@@ -6,13 +6,13 @@ from pathlib import Path
 
 import alembic.config
 
-import prodik.infrastructure.db
+import prodik.infrastructure.persistence
 from prodik.bootstrap.api import run_http
-from prodik.infrastructure.db import start_mapper
+from prodik.infrastructure.persistence import start_mapper
 
 
 def get_alembic_config_path() -> Iterator[Path]:
-    source = files(prodik.infrastructure.db).joinpath("alembic.ini")
+    source = files(prodik.infrastructure.persistence).joinpath("alembic.ini")
     with as_file(source) as path:
         yield path
 

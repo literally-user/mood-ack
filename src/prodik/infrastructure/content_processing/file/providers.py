@@ -1,6 +1,9 @@
 from dishka import Provider, Scope, WithParents, provide, provide_all
 
-from prodik.infrastructure.file import FileProcessingRegistry, TXTProcessingClient
+from prodik.infrastructure.content_parser import (
+    ContentParserRegistry,
+    TXTParserClient,
+)
 from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
 from prodik.infrastructure.ml import PredictingModelImpl
 from prodik.infrastructure.repositories import TaskRepositoryImpl
@@ -17,10 +20,10 @@ class FileHandleProcessProvider(Provider):
     )
 
     @provide(scope=Scope.REQUEST)
-    def file_client_registry(self) -> FileProcessingRegistry:
-        registry = FileProcessingRegistry()
+    def file_client_registry(self) -> ContentParserRegistry:
+        registry = ContentParserRegistry()
 
-        txt_client = TXTProcessingClient()
+        txt_client = TXTParserClient()
 
         registry.register("txt", txt_client)
 

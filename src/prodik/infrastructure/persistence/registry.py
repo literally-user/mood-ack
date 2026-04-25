@@ -22,7 +22,7 @@ from prodik.domain.user import (
     UserRole,
     UserStatus,
 )
-from prodik.infrastructure.db.types import (
+from prodik.infrastructure.persistence.types import (
     AgeType,
     EmailType,
     FirstNameType,

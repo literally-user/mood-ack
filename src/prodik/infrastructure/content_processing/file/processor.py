@@ -13,12 +13,12 @@ from prodik.application.manage_task.errors import TaskNotFoundError
 from prodik.bootstrap.di.providers.connection import ConnectionProvider, S3Provider
 from prodik.domain.task import FileId, TaskId
 from prodik.infrastructure.config import Config, ObjectStorageConfig, PersistenceConfig
+from prodik.infrastructure.content_parser import ContentParserRegistry
 from prodik.infrastructure.content_processing.file.providers import (
     FileHandleProcessProvider,
 )
 from prodik.infrastructure.content_processing.file.read import FileReader
 from prodik.infrastructure.content_processing.shared import HandleExecutionContext
-from prodik.infrastructure.file import FileProcessingRegistry
 
 
 class FileHandleProcess(Process):
@@ -50,7 +50,7 @@ class FileHandleProcess(Process):
             task_repository = await con.get(TaskRepository)
             predicting_model = await con.get(PredictingModel)
             file_storage_gateway = await con.get(FileStorageGateway)
-            file_processing_registry = await con.get(FileProcessingRegistry)
+            file_processing_registry = await con.get(ContentParserRegistry)
             tx_manager = await con.get(TransactionManager)
 
             async with tx_manager:
