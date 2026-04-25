@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import (
-    ModeratorCannotBeDeactivatedError,
-    UserNotFoundError,
-)
 from prodik.application.interfaces.repositories import (
     UserRepository,
 )
 from prodik.application.interfaces.transaction_manager import TransactionManager
+from prodik.application.manage_user.errors import (
+    ModeratorCannotBeDeactivatedError,
+    UserNotFoundError,
+)
 from prodik.application.services import SessionService
 from prodik.domain.user import UserId
 from prodik.domain.user.services import AccessControlService

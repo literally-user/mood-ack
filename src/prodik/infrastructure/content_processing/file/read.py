@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from prodik.application.errors import UnsupportedFileExtensionError
+from prodik.application.content_processing.errors import UnsupportedFileExtensionError
 from prodik.domain.task import FileId
 from prodik.infrastructure.config import ObjectStorageConfig
 from prodik.infrastructure.file import FileProcessingRegistry

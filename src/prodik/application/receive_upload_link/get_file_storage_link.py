@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import InvalidCredentialsError, UserSessionRevokedError
+from prodik.application.auth.errors import (
+    InvalidCredentialsError,
+    UserSessionRevokedError,
+)
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserSessionRepository

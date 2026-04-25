@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from uuid import uuid4
 
-from prodik.application.errors import ObjectFileNotFoundError, TaskAlreadyExistsError
+from prodik.application.content_processing.errors import (
+    ObjectFileNotFoundError,
+    TaskAlreadyExistsError,
+)
 from prodik.application.interfaces.content_processing import FileProcessor
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.predicting_model import PredictingModel

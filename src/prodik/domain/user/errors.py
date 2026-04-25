@@ -4,6 +4,9 @@ from prodik.application.errors import ApplicationError
 class DomainUserValidationError(ApplicationError): ...
 
 
+class NotEnoughRightsError(ApplicationError): ...
+
+
 class UsernameTooLongError(DomainUserValidationError): ...
 
 

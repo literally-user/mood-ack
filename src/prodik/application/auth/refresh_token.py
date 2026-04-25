@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import (
+from prodik.application.auth.errors import (
     InvalidCredentialsError,
     UserSessionRevokedError,
 )

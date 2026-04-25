@@ -4,12 +4,12 @@ from multiprocessing import Process
 
 from dishka import make_async_container
 
-from prodik.application.errors import TaskNotFoundError
 from prodik.application.interfaces.content_processing.file import FileProcessor
 from prodik.application.interfaces.gateways import FileStorageGateway
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
+from prodik.application.manage_task.errors import TaskNotFoundError
 from prodik.bootstrap.di.providers.connection import ConnectionProvider, S3Provider
 from prodik.domain.task import FileId, TaskId
 from prodik.infrastructure.config import Config, ObjectStorageConfig, PersistenceConfig

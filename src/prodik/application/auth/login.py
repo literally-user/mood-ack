@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import uuid4
 
-from prodik.application.errors import (
+from prodik.application.auth.errors import (
     InvalidCredentialsError,
     UserDeactivatedError,
 )

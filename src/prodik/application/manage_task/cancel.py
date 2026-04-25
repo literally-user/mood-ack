@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import (
-    TaskNotFoundError,
-)
 from prodik.application.interfaces.repositories import (
     TaskRepository,
 )
 from prodik.application.interfaces.transaction_manager import TransactionManager
+from prodik.application.manage_task.errors import TaskNotFoundError
 from prodik.application.services import SessionService
 from prodik.domain.task import TaskId
 from prodik.domain.user.services import AccessControlService

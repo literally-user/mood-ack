@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import NotEnoughRightsError
 from prodik.domain.task import Task
 from prodik.domain.user import User
+from prodik.domain.user.errors import NotEnoughRightsError
 
 
 @dataclass

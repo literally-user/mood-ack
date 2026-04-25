@@ -4,7 +4,10 @@ from typing import Final
 
 from fastapi import Request
 
-from prodik.application.errors import AccessTokenExpiredError, InvalidCredentialsError
+from prodik.application.auth.errors import (
+    AccessTokenExpiredError,
+    InvalidCredentialsError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.token_manager import AccessTokenManager, UserData
 

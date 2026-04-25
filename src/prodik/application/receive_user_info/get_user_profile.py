@@ -1,11 +1,9 @@
 from dataclasses import dataclass
 
-from prodik.application.errors import (
-    UserNotFoundError,
-)
 from prodik.application.interfaces.repositories import (
     UserRepository,
 )
+from prodik.application.manage_user.errors import UserNotFoundError
 from prodik.application.services import SessionService
 from prodik.domain.user import User, UserId
 

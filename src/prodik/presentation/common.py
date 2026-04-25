@@ -3,20 +3,23 @@ from typing import Any, Final
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from prodik.application.errors import (
+from prodik.application.auth.errors import (
     AccessTokenExpiredError,
-    ApplicationError,
     InvalidCredentialsError,
-    ModeratorCannotBeDeactivatedError,
-    NotEnoughRightsError,
-    ObjectFileNotFoundError,
-    TaskNotFoundError,
-    UnsupportedFileExtensionError,
     UserDeactivatedError,
-    UserNotFoundError,
     UserSessionRevokedError,
 )
-from prodik.domain.user.errors import DomainUserValidationError
+from prodik.application.content_processing.errors import (
+    ObjectFileNotFoundError,
+    UnsupportedFileExtensionError,
+)
+from prodik.application.errors import ApplicationError
+from prodik.application.manage_task.errors import TaskNotFoundError
+from prodik.application.manage_user.errors import (
+    ModeratorCannotBeDeactivatedError,
+    UserNotFoundError,
+)
+from prodik.domain.user.errors import DomainUserValidationError, NotEnoughRightsError
 from prodik.presentation.api.auth import router as auth_router
 from prodik.presentation.api.file import router as file_router
 from prodik.presentation.api.model import router as model_router
