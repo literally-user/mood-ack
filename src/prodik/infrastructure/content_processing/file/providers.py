@@ -5,7 +5,7 @@ from prodik.infrastructure.content_parser import (
     TXTParserClient,
 )
 from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
-from prodik.infrastructure.ml import PredictingModelImpl
+from prodik.infrastructure.predicting_model import PredictingModelImpl
 from prodik.infrastructure.repositories import TaskRepositoryImpl
 from prodik.infrastructure.transaction_manager import TransactionManagerImpl
 

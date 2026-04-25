@@ -1,4 +1,6 @@
-from prodik.application.interfaces.file import ContentParserClient
+from prodik.application.interfaces.content_processing.content_parser import (
+    ContentParserClient,
+)
 
 
 class TXTParserClient(ContentParserClient):

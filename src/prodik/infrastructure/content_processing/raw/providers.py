@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, WithParents, provide_all
 
-from prodik.infrastructure.ml import PredictingModelImpl
+from prodik.infrastructure.predicting_model import PredictingModelImpl
 from prodik.infrastructure.repositories import TaskRepositoryImpl
 from prodik.infrastructure.transaction_manager import TransactionManagerImpl
 
