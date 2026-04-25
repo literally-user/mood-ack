@@ -1,17 +1,19 @@
 import asyncio
+import hashlib
 from dataclasses import dataclass
 from multiprocessing import Process
 
 from dishka import make_async_container
 
 from prodik.application.interfaces.content_processing import RawProcessor
+from prodik.application.interfaces.gateways import CacheGateway
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.application.manage_task.errors import TaskNotFoundError
-from prodik.bootstrap.di.providers.connection import ConnectionProvider
+from prodik.bootstrap.di.providers.connection import ConnectionProvider, RedisProvider
 from prodik.domain.task import TaskId
-from prodik.infrastructure.config import Config, PersistenceConfig
+from prodik.infrastructure.config import CacheConfig, Config, PersistenceConfig
 from prodik.infrastructure.content_processing.raw.providers import (
     RawHandleProcessProvider,
 )
@@ -19,10 +21,6 @@ from prodik.infrastructure.content_processing.shared import HandleExecutionConte
 
 
 class RawHandleProcess(Process):
-    config: Config
-    task_id: TaskId
-    content: str
-
     def __init__(self, config: Config, *, task_id: TaskId, content: str) -> None:
         self.config = config
         self.task_id = task_id
@@ -37,10 +35,13 @@ class RawHandleProcess(Process):
         container = make_async_container(
             RawHandleProcessProvider(),
             ConnectionProvider(),
+            RedisProvider(),
             context={
                 PersistenceConfig: self.config.persistence,
+                CacheConfig: self.config.cache_config,
             },
         )
+        cache = await container.get(CacheGateway)
         async with container() as con:
             task_repository = await con.get(TaskRepository)
             predicting_model = await con.get(PredictingModel)
@@ -52,9 +53,13 @@ class RawHandleProcess(Process):
                     raise TaskNotFoundError("Task not found")
 
                 with HandleExecutionContext(task):
-                    result = predicting_model.process(self.content)
+                    hashed_key = hashlib.sha256(self.content.encode()).hexdigest()
+                    result = await cache.get(hashed_key)
+                    if result is None:
+                        result = predicting_model.process(self.content)
+                        await cache.set(hashed_key, result)
 
-                    task.set_result(result)
+                    task.set_result(float(result))
                     await task_repository.update(task)
 
 

@@ -7,10 +7,10 @@ clean:
     docker compose -f docker-compose.base.yaml down -v
 
 attach target:
-    docker-compose -f docker-compose.base.yaml exec -it -t {{target}} /bin/bash
+    docker compose -f docker-compose.base.yaml exec -it -t {{target}} /bin/bash
 
 restart target:
-    docker-compose -f docker-compose.base.yaml restart {{target}}
+    docker compose -f docker-compose.base.yaml restart {{target}}
 
 run target build="":
     #!/usr/bin/env bash

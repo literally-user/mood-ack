@@ -17,3 +17,9 @@ temp_directory = "src/prodik/infrastructure/file/temp"
 [keycloak]
 client_id = "your_client_id"
 client_secret = "your_client_secret"
+
+[cache]
+host = "cache.literally.io"
+port = 6379
+ttl = 3600
+password = "your_cache_password"

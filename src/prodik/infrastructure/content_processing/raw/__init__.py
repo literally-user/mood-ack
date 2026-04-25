@@ -1,3 +1,3 @@
-from .raw import RawProcessorImpl
+from .processor import RawProcessorImpl
 
 __all__ = ("RawProcessorImpl",)

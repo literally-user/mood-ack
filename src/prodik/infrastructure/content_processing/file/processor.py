@@ -5,14 +5,20 @@ from multiprocessing import Process
 from dishka import make_async_container
 
 from prodik.application.interfaces.content_processing.file import FileProcessor
-from prodik.application.interfaces.gateways import FileStorageGateway
+from prodik.application.interfaces.gateways.file_storage_gateway import (
+    FileStorageGateway,
+)
 from prodik.application.interfaces.predicting_model import PredictingModel
 from prodik.application.interfaces.repositories import TaskRepository
 from prodik.application.interfaces.transaction_manager import TransactionManager
 from prodik.application.manage_task.errors import TaskNotFoundError
 from prodik.bootstrap.di.providers.connection import ConnectionProvider, S3Provider
 from prodik.domain.task import FileId, TaskId
-from prodik.infrastructure.config import Config, ObjectStorageConfig, PersistenceConfig
+from prodik.infrastructure.config import (
+    Config,
+    ObjectStorageConfig,
+    PersistenceConfig,
+)
 from prodik.infrastructure.content_parser import ContentParserRegistry
 from prodik.infrastructure.content_processing.file.providers import (
     FileHandleProcessProvider,
@@ -22,10 +28,6 @@ from prodik.infrastructure.content_processing.shared import HandleExecutionConte
 
 
 class FileHandleProcess(Process):
-    config: Config
-    file_id: FileId
-    task_id: TaskId
-
     def __init__(self, config: Config, *, file_id: FileId, task_id: TaskId) -> None:
         self.config = config
         self.file_id = file_id

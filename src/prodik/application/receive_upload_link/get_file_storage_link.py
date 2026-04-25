@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from prodik.application.interfaces.gateways import FileStorageGateway
+from prodik.application.interfaces.gateways.file_storage_gateway import (
+    FileStorageGateway,
+)
 from prodik.application.services import SessionService
 
 

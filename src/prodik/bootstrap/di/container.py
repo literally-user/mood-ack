@@ -11,6 +11,7 @@ from prodik.bootstrap.di.providers.infrastructure import InfrastructureProvider
 from prodik.bootstrap.di.providers.transport import HTTPXClientProvider
 from prodik.infrastructure.config import (
     APIConfig,
+    CacheConfig,
     Config,
     KeyCloakConfig,
     ObjectStorageConfig,
@@ -32,6 +33,7 @@ def get_async_container(config: Config) -> AsyncContainer:
             PersistenceConfig: config.persistence,
             ObjectStorageConfig: config.object_storage,
             KeyCloakConfig: config.keycloak,
+            CacheConfig: config.cache_config,
             Config: config,
         },
     )

@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 
 from prodik.application.interfaces.predicting_model import ModelMeta, PredictingModel
@@ -9,4 +10,5 @@ class PredictingModelImpl(PredictingModel):
         return ModelMeta(nickname="Coming Soon", version="0.0.0")
 
     def process(self, text: str) -> float:  # noqa: ARG002 - coming soon
+        time.sleep(10)
         return 0.5

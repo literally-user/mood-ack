@@ -3,6 +3,7 @@ from collections.abc import AsyncIterator
 from aioboto3.session import Session as AiobotoSession
 from aiobotocore.client import AioBaseClient
 from dishka import Provider, Scope, provide
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -10,7 +11,11 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from prodik.infrastructure.config import ObjectStorageConfig, PersistenceConfig
+from prodik.infrastructure.config import (
+    CacheConfig,
+    ObjectStorageConfig,
+    PersistenceConfig,
+)
 
 
 class ConnectionProvider(Provider):
@@ -59,3 +64,15 @@ class S3Provider(Provider):
             endpoint_url=config.url,
         ) as client:
             yield client
+
+
+class RedisProvider(Provider):
+    @provide(scope=Scope.APP)
+    async def get_redis_client(self, config: CacheConfig) -> AsyncIterator[Redis]:
+        client = Redis(
+            host=config.host,
+            port=config.port,
+            password=config.password,
+        )
+        yield client
+        await client.close()

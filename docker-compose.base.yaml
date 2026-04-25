@@ -48,6 +48,17 @@ services:
       prodik-network:
         aliases:
           - metrics.literally.io
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning --requirepass your_cache_password
+    volumes:
+      - redis-data:/data
+    networks:
+      prodik-network:
+        aliases:
+          - cache.literally.io
 
   grafana:
     image: grafana/grafana:latest
@@ -103,6 +114,7 @@ services:
       - api
 
 volumes:
+  redis-data:
   prometheus-data:
   grafana-data:
   postgres-data:

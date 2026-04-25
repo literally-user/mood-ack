@@ -3,7 +3,7 @@ from httpx import AsyncClient
 
 from prodik.infrastructure.config import KeyCloakConfig
 from prodik.infrastructure.content_processing import FileProcessorImpl, RawProcessorImpl
-from prodik.infrastructure.file_storage_gateway import FileStorageGatewayImpl
+from prodik.infrastructure.gateways import FileStorageGatewayImpl
 from prodik.infrastructure.identity_provider import IdentityProviderImpl
 from prodik.infrastructure.oauth.keycloak import KeycloakOAuthClient
 from prodik.infrastructure.oauth.registry import OAuthClientRegistry

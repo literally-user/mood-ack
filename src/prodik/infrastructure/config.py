@@ -37,10 +37,19 @@ class ObjectStorageConfig:
 
 
 @dataclass(slots=True, kw_only=True)
+class CacheConfig:
+    host: str
+    port: int
+    ttl: int
+    password: str
+
+
+@dataclass(slots=True, kw_only=True)
 class Config:
     api: APIConfig
     persistence: PersistenceConfig
     object_storage: ObjectStorageConfig
+    cache_config: CacheConfig
     keycloak: KeyCloakConfig
 
 
@@ -61,6 +70,12 @@ def load_config() -> Config:
             ),
             persistence=PersistenceConfig(
                 url=config["api"]["persistence"],
+            ),
+            cache_config=CacheConfig(
+                host=config["cache"]["host"],
+                port=config["cache"]["port"],
+                ttl=config["cache"]["ttl"],
+                password=config["cache"]["password"],
             ),
             object_storage=ObjectStorageConfig(
                 bucket=config["object_storage"]["bucket"],

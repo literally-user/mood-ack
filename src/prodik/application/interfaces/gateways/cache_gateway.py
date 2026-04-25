@@ -1,0 +1,6 @@
+from typing import Any, Protocol
+
+
+class CacheGateway(Protocol):
+    async def set(self, key: str, value: Any) -> None: ...
+    async def get(self, key: str) -> Any: ...

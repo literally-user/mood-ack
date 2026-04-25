@@ -20,6 +20,7 @@ dependencies = [
     "pyjwt>=2.11.0",
     "pytest>=9.0.3",
     "pytest-asyncio>=1.3.0",
+    "redis[hiredis]>=7.4.0",
     "sqlalchemy>=2.0.46",
     "structlog>=25.5.0",
     "types-aioboto3>=15.5.0",
