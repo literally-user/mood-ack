@@ -4,7 +4,7 @@ from typing import Final
 
 from fastapi import Request
 
-from prodik.application.auth.errors import (
+from prodik.application.authorization.errors import (
     AccessTokenExpiredError,
     InvalidCredentialsError,
 )

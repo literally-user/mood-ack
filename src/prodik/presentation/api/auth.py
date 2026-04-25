@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, status
 
-from prodik.application.auth import (
+from prodik.application.authorization import (
     ChangePasswordInteractor,
     ChangePasswordRequestDTO,
     LoginInteractor,

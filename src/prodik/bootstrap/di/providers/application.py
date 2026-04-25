@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide_all
 
-from prodik.application.auth import (
+from prodik.application.authorization import (
     ChangePasswordInteractor,
     LoginInteractor,
     OAuthLoginInteractor,

@@ -3,7 +3,7 @@ from typing import Any, Final
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from prodik.application.auth.errors import (
+from prodik.application.authorization.errors import (
     AccessTokenExpiredError,
     InvalidCredentialsError,
     UserDeactivatedError,
